@@ -6,7 +6,18 @@ run_pipeline <- function(sce) {
 
 
 perform_qc <- function(sce) {
+  # performs qc and stores the results in sce
+  # we will use ggplot2 to make some visulisation functions
+  # There are a lot of things going on here, focus on only a few
 
+  # This adds basic qc information
+  sce <- scater::addPerCellQC(sce)
+  # Decide if we want to pass in the subsets argument
+
+  # Do qc
+
+
+  return(sce)
 }
 
 perform_normalization <- function(sce) {
@@ -21,6 +32,6 @@ perform_feature_selection <- function(sce, number=2000) {
 
 
 perform_dimensionality_reduction <- function(sce) {
-
+  # maybe let people calculate using ICA, NMF???
 }
 
