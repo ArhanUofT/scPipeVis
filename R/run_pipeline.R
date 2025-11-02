@@ -39,10 +39,12 @@ run_pipeline <- function(sce) {
   sce <- perform_feature_selection(sce)
   sce <- perform_dimensionality_reduction(sce)
   sce <- calculate_umap(sce)
+
+  # Clustering need to be added
   return(sce)
 }
 
-
+# Work in progress for qc function
 perform_qc <- function(sce) {
   # Based on the literature perform best qc steps
   # Example:  removing mitochondrial genes, removing doublets, removing low gene count cells,
@@ -64,6 +66,9 @@ perform_qc <- function(sce) {
   return(sce)
 }
 
+#####
+# Helper functions
+
 perform_normalization <- function(sce) {
   # Best kind of normalisation based on benchmarking of eltze and Huber, nature methods, 2023 is log(c+1) transforaation
   # can make this function more complicated by adding more arguments, like size factores true or false etc etc
@@ -76,7 +81,7 @@ perform_feature_selection <- function(sce, number=2000) {
   # Selecting highly variable genes provides a good way to do feature selection while preserving most of the biological variation.
   hvg_data <- scran::modelGeneVar(sce)
   chosen <- scran::getTopHVGs(hvg_data, n=number)
-  rowSubset(sce.pbmc) <- chosen
+  rowSubset(sce) <- chosen
 
   # Instead of adding values
   return(sce)
@@ -86,10 +91,12 @@ perform_feature_selection <- function(sce, number=2000) {
 perform_dimensionality_reduction <- function(sce) {
   # maybe let people calculate using ICA, NMF???
   set.seed(1008796812)
-  dr_sce <- scran::fixedPCA(sce, subset.row = "subset")
+  sce <- scran::fixedPCA(sce, subset.row = rowData(sce)$subset)
+  return(sce)
 }
 
 calculate_umap <- function(sce) {
   set.seed(1008796812) # My student number
-  runUMAP(sce, dimred="PCA")
+  sce <- runUMAP(sce, dimred="PCA")
+  return(sce)
 }
