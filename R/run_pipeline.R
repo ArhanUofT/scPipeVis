@@ -1,7 +1,45 @@
+#' Run the Single-Cell RNA-Seq Processing Pipeline
+#'
+#' This function executes a standardized single-cell RNA-seq processing pipeline
+#' using a provided `SingleCellExperiment` object. The pipeline includes normalization,
+#' feature selection, dimensionality reduction, and calculating UMAP embedding. Each processing step
+#' is applied sequentially to the same `sce` object to conserve memory.
+#'
+#' @param sce A `SingleCellExperiment` object containing pre-quality-controlled
+#' single-cell RNA-seq data.
+#'
+#' @return A processed `SingleCellExperiment` object containing normalized counts,
+#' selected features, reduced dimensional representations (PCA), and UMAP coordinates.
+#'
+#' @details
+#' The pipeline performs the following steps in order:
+#' \enumerate{
+#'   \item Normalization using `scuttle::logNormCounts()`
+#'   \item Feature selection of highly variable genes using `scran::modelGeneVar()`
+#'   \item Dimensionality reduction with `scran::fixedPCA()`
+#'   \item UMAP embedding with `scater::runUMAP()`
+#' }
+#' Each step assumes the corresponding helper function (`perform_normalization`,
+#' `perform_feature_selection`, etc.) is defined and available in the environment.
+#'
+#' @examples
+#' \dontrun{
+#' library(SingleCellExperiment)
+#' sce <- SingleCellExperiment(assays = list(counts = matrix(rpois(10000, 10), ncol = 100)))
+#' sce_processed <- run_pipeline(sce)
+#' }
+#'
+#' @export
 run_pipeline <- function(sce) {
   # Assumption: Data is quality controlled and in a SingleCellExperiment object
   # We can design the pipeline to start from very scratch
 
+  # we will keep updating the same sce object to save space
+  sce <- perform_normalization(sce)
+  sce <- perform_feature_selection(sce)
+  sce <- perform_dimensionality_reduction(sce)
+  sce <- calculate_umap(sce)
+  return(sce)
 }
 
 
@@ -35,11 +73,23 @@ perform_normalization <- function(sce) {
 
 perform_feature_selection <- function(sce, number=2000) {
   # Highly variable genes for feature slection step
+  # Selecting highly variable genes provides a good way to do feature selection while preserving most of the biological variation.
+  hvg_data <- scran::modelGeneVar(sce)
+  chosen <- scran::getTopHVGs(hvg_data, n=number)
+  rowSubset(sce.pbmc) <- chosen
 
+  # Instead of adding values
+  return(sce)
 }
 
 
 perform_dimensionality_reduction <- function(sce) {
   # maybe let people calculate using ICA, NMF???
+  set.seed(1008796812)
+  dr_sce <- scran::fixedPCA(sce, subset.row = "subset")
 }
 
+calculate_umap <- function(sce) {
+  set.seed(1008796812) # My student number
+  runUMAP(sce, dimred="PCA")
+}
