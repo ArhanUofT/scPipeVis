@@ -1,16 +1,16 @@
 Package: scPipeVis
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Single Cell Data Analysis Pipeline and Visualisations (Title Case)
 Version: 0.1.0
 Authors@R: c(
     person(
-      "Jane", "Doe",
-      email = "jane@example.com",
+      "Arhan", "Rupani",
+      email = "arhan.rupani@mail.utoronto.ca",
       role = c("aut", "cre")
     )
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: Runs a typical scRNA-seq data analysis pipeline and produces useful visualisations.
+  Made for fast and very preliminary data analysis using scRNA-seq best practices methods guidelines.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
