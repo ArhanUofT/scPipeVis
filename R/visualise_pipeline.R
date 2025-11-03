@@ -9,23 +9,22 @@
 #' `colData(sce)`.
 #'
 #' @param sce A `SingleCellExperiment` object that has already been processed
-#' by the pipeline and contains the variance decomposition in
-#' `metadata(sce)$hvg_data`, as created by `perform_feature_selection()`.
+#' by the pipeline function `run_pipeline()` and contains all the information required to create typical visualisations
+#' that are part of analysing scRNA-seq data.
 #' @param colour_by Optional. A character scalar naming a column in
-#' `colData(sce)` to use for colouring points in the PCA/UMAP plots. Defaults to
+#' `colData(sce)` to use for colouring cells in the PCA/UMAP plots. Defaults to
 #' `NA`, in which case no colouring is applied.
+#' Unsupervised clustering step is not yet implemented but extremely useful parameter after implementation of clustering
 #'
 #' @details
 #' This function assumes that:
 #' \itemize{
-#'   \item feature selection was run with `scran::modelGeneVar()`, and
-#'   \item the result was stored as `metadata(sce)$hvg_data`, and
-#'   \item PCA/UMAP have already been computed and stored in `reducedDims(sce)`.
+#'   \item `run_pipeline()` function was run on a `SingleCellExperiment` object and strictly that
+#'    the output of that function is the input to this function.
 #' }
-#' If any of these are missing, the plotting code may error.
 #'
-#' @return Invisibly returns the input `sce`. The function is called for its
-#' side-effect of producing diagnostic plots.
+#' @return The function does not explicitely return anything but is called for its
+#' side-effect of producing plots.
 #'
 #' @examples
 #' \dontrun{
@@ -34,7 +33,6 @@
 #' }
 #'
 #' @export
-
 visualise_pipeline <- function(sce, colour_by = NA) {
   # Create few basic plots for now
   # Add more functionality after first submission
