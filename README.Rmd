@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: end -->
 
-The goal of scPipeVis is to ...
+Run scRNA-seq data analysis pipeline + visualization
 
 ## Description
 
@@ -61,6 +61,7 @@ browseVignettes("scPipeVis")
 2.  ***visualise_pipeline*** for creating typical plots which are used during exploratory scRNA-seq data analysis.
 
 Refer to package vignettes for more details. An overview of the package is illustrated below.
+TODO
 
 ## Contributions
 

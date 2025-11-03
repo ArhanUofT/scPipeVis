@@ -7,7 +7,7 @@
 
 <!-- badges: end -->
 
-The goal of scPipeVis is to …
+Run scRNA-seq data analysis pipeline + visualization
 
 ## Description
 
@@ -96,7 +96,7 @@ browseVignettes("scPipeVis")
     during exploratory scRNA-seq data analysis.
 
 Refer to package vignettes for more details. An overview of the package
-is illustrated below.
+is illustrated below. TODO
 
 ## Contributions
 
