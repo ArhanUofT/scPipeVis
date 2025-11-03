@@ -1,5 +1,5 @@
 ---
-title: "Introduction-to-scPipeVis"
+title: "Introduction to scPipeVis"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction-to-scPipeVis}
@@ -15,5 +15,32 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(scPipeVis)
+# library(scPipeVis)
+```
+
+# Introduction
+
+Single cell RNA sequencing (scRNA-seq) is a genomic approach used to quantify messenger RNA sequences (whole transcriptome) at the resolution of a single cell, which can be scaled to tens of thousands of cells at the same time. This results in generation of a cell by gene counts matrix (in R gene by cell) as the primary data, and additional metadata from any given scRNA-seq experiment. Data transformation, modelling, and analysis methods operate downstream on the above described data. `scPipevis` is an R package that lets you perform all the steps with a single function so users can download the package and run this function to do a very preliminary bare-bones data analysis of scRNA-seq data. Additionally there is a visualisation function that creates basic plots which are typically used for the visualisation of scRNA-seq data. The complete motivation behind the creation of this package follows. There are major limitations of this package which are also talked about below.
+
+# Motivation
+
+A default single cell RNA sequencing data analysis pipeline comprises of several steps, from quality control, normalization of count matrix, feature selection, dimensionality reduction, clustering, annotating cell types, and then differential gene expression followed by gene set enrichment analysis. 
+
+
+# Limitations of `scPipeVis`
+
+
+# Setting up the data
+
+
+# Using the two main functions
+
+
+# More to come
+
+
+# Session information {-}
+
+```{r}
+sessionInfo()
 ```
