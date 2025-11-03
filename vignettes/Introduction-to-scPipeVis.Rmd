@@ -1,5 +1,5 @@
 ---
-title: "Introduction to scPipeVis"
+title: "Tutorial to use scPipeVis"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction-to-scPipeVis}
@@ -10,7 +10,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
@@ -18,28 +19,91 @@ knitr::opts_chunk$set(
 # library(scPipeVis)
 ```
 
-# Introduction
+## Introduction
 
-Single cell RNA sequencing (scRNA-seq) is a genomic approach used to quantify messenger RNA sequences (whole transcriptome) at the resolution of a single cell, which can be scaled to tens of thousands of cells at the same time. This results in generation of a cell by gene counts matrix (in R gene by cell) as the primary data, and additional metadata from any given scRNA-seq experiment. Data transformation, modelling, and analysis methods operate downstream on the above described data. `scPipevis` is an R package that lets you perform all the steps with a single function so users can download the package and run this function to do a very preliminary bare-bones data analysis of scRNA-seq data. Additionally there is a visualisation function that creates basic plots which are typically used for the visualisation of scRNA-seq data. The complete motivation behind the creation of this package follows. There are major limitations of this package which are also talked about below.
+Single cell RNA sequencing (scRNA-seq) is a genomic approach used to quantify messenger RNA sequences (whole transcriptome) at the resolution of a single cell, which can be scaled to tens of thousands of cells at the same time. This results in generation of a cell by gene counts matrix (in R gene by cell) as the primary data, and additional metadata from any given scRNA-seq experiment. Data transformation, modelling, and analysis methods operate downstream on the above described data. `scPipeVis` is an R package that lets you perform all the steps with a single function so users can download the package and run this function to do a very preliminary bare-bones data analysis of scRNA-seq data. Additionally there is a visualisation function that creates basic plots which are typically used for the visualisation of scRNA-seq data. The complete motivation behind the creation of this package follows. There are major limitations of this package which are also talked about below.
 
-# Motivation
+## Motivation
 
-A default single cell RNA sequencing data analysis pipeline comprises of several steps, from quality control, normalization of count matrix, feature selection, dimensionality reduction, clustering, annotating cell types, and then differential gene expression followed by gene set enrichment analysis. 
+A default single cell RNA sequencing data analysis pipeline comprises of several steps, from quality control, normalization of count matrix, feature selection, dimensionality reduction, clustering, annotating cell types, and then differential gene expression followed by gene set enrichment analysis. In my literature review, I found that all of these steps can be performed in so many different ways by using different methods at each step. This process is further complicated by tuning of hyperparameters at many different steps. Therefore, any user while analyzing their data, has to make so many choices/decisions at each step. These decisions, like tuning the hyperparameter or choosing the right method is absolutely not trivial. In other words, these choices at each step can affect your downstream analyses. Therefore, making well informed decisions are crucial. This is where scPipeVis comes in, following an extensive literature review, I have put together a pipeline that takes care of most of these above mentioned steps using the current best practices methods based on published reviews benchmarking different methods for all these steps. Further scPipeVis provides a function to visualize each step of the pipeline with many different and appropriate depictions. These depictions are chosen after going through the literature and figuring out what kind of visualizations are required at each step. Therefore, this part of the package will facilitate informed decision making for users as they go on to select the best suitable methods and hyper parameters which in turn best suits their own datasets and meets their needs.
+
+## Limitations of `scPipeVis`
+
+This package is created for preliminary data analysis of scRNA-seq data, at the end of the day the user will have to eventually figure out if certain methods work better to answer the question that they are trying to answer using their data. The user will also eventually have to tune hyperparameters of certain functions, if they dont get satisfactory results from this pipeline. Last but not the least, here I don't provide an exhaustive set of visualizations. I will continue working on the package to add more and more visualizations and make the pipeline more end to end.
+
+## Setting up the data
+
+We’ll use a small, well-known public dataset from the `scRNAseq` package.
+
+```{r}
+# install.packages("BiocManager")
+BiocManager::install("scRNAseq")
+```
+
+Load the dataset (Zeisel et al., 2015 mouse brain):
+
+```{r}
+library(scRNAseq)
+library(SingleCellExperiment)
+
+sce <- ZeiselBrainData()
+sce
+```
+
+## Using the two main functions
+
+### 1. Run the pipeline
+
+`run_pipeline()` performs:
+
+1\. log-normalization (`scuttle::logNormCounts`)
+
+2\. HVG selection (`scran::modelGeneVar + getTopHVGs`) and stores the variance model in `metadata(sce)$hvg_data`
+
+3\. PCA (`scran::fixedPCA`) using the selected genes
+
+4\. UMAP (`scater::runUMAP`) from PCA
+
+```{r}
+library(scPipeVis)
+sce_processed <- run_pipeline(sce)
+sce_processed
+```
+
+Check that reduced dimensions were created:
+
+```{r}
+names(reducedDims(sce_processed))
+```
+
+Inspect the stored HVG variance model:
+
+```{r}
+# TODO
+```
+
+### 2. Visualize outputs
+
+`visualise_pipeline()` renders the mean–variance fit and low-dimensional projections (PCA & UMAP). You can optionally color by a column in `colData(sce)`.\
+TODO: 
+```{r}
+visualise_pipeline(sce_processed)
+```
+
+## customization
+NOTE: all the helper functions are to be made availaible to users so they can customize the pipeline by calling individual functions with additional arguments that would be passed to functions from other packages.\
+This is a design design that I am not sure I want to make yet because requires knowledge of my source code which in some sense defeats the purpose of this package.
+
+### Saving and reloading results
+```{r}
+saveRDS(sce_processed, file = "sce_processed.rds")
+sce_reloaded <- readRDS("sce_processed.rds")
+```
 
 
-# Limitations of `scPipeVis`
+## More to come
 
-
-# Setting up the data
-
-
-# Using the two main functions
-
-
-# More to come
-
-
-# Session information {-}
+## Session information {.unnumbered}
 
 ```{r}
 sessionInfo()
