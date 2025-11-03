@@ -17,8 +17,8 @@ selected features, reduced dimensional representations (PCA), and UMAP coordinat
 \description{
 This function executes a standardized single-cell RNA-seq processing pipeline
 using a provided `SingleCellExperiment` object. The pipeline includes normalization,
-feature selection, dimensionality reduction, and calculating UMAP embedding. Each processing step
-is applied sequentially to the same `sce` object to conserve memory.
+feature selection, dimensionality reduction, and calculating UMAP embedding. Methods and default values have been chosen for each step based on literature review so user can simply run the function for very preliminary results without having to worry about method selection and hyperparameter tuning at each step.
+Each processing step is applied sequentially to the same `sce` object to conserve memory.
 }
 \details{
 The pipeline performs the following steps in order:
