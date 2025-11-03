@@ -18,7 +18,7 @@ selected features, reduced dimensional representations (PCA), and UMAP coordinat
 This function executes a standardized single-cell RNA-seq processing pipeline
 using a provided `SingleCellExperiment` object. The pipeline includes normalization,
 feature selection, dimensionality reduction, and calculating UMAP embedding. Methods and default values have been chosen for each step based on literature review so user can simply run the function for very preliminary results without having to worry about method selection and hyperparameter tuning at each step.
-Each processing step is applied sequentially to the same `sce` object to conserve memory.
+Each processing step is applied sequentially and the resulting object is stored in `sce` variable to conserve memory.
 }
 \details{
 The pipeline performs the following steps in order:
@@ -28,13 +28,22 @@ The pipeline performs the following steps in order:
   \item Dimensionality reduction with `scran::fixedPCA()`
   \item UMAP embedding with `scater::runUMAP()`
 }
-Each step assumes the corresponding helper function (`perform_normalization`,
-`perform_feature_selection`, etc.) is defined and available in the environment.
+Each step uses the corresponding helper function (`perform_normalization`,
+`perform_feature_selection`, etc.).
+}
+\note{
+Unsupervised clustering and automated annotations are to be added in to the pipeline to make it extensive.
 }
 \examples{
 \dontrun{
+# Load example data from the scRNAseq package
+library(scRNAseq)
 library(SingleCellExperiment)
-sce <- SingleCellExperiment(assays = list(counts = matrix(rpois(10000, 10), ncol = 100)))
+
+# Example dataset: Zeisel et al. 2015 mouse brain data
+sce <- ZeiselBrainData()
+
+# Run the pipeline
 sce_processed <- run_pipeline(sce)
 }
 
