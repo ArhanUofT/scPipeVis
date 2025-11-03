@@ -2,8 +2,8 @@
 #'
 #' This function executes a standardized single-cell RNA-seq processing pipeline
 #' using a provided `SingleCellExperiment` object. The pipeline includes normalization,
-#' feature selection, dimensionality reduction, and calculating UMAP embedding. Each processing step
-#' is applied sequentially to the same `sce` object to conserve memory.
+#' feature selection, dimensionality reduction, and calculating UMAP embedding. Methods and default values have been chosen for each step based on literature review so user can simply run the function for very preliminary results without having to worry about method selection and hyperparameter tuning at each step.
+#' Each processing step is applied sequentially to the same `sce` object to conserve memory.
 #'
 #' @param sce A `SingleCellExperiment` object containing pre-quality-controlled
 #' single-cell RNA-seq data.
@@ -81,8 +81,9 @@ perform_feature_selection <- function(sce, number=2000) {
   # Selecting highly variable genes provides a good way to do feature selection while preserving most of the biological variation.
   hvg_data <- scran::modelGeneVar(sce)
   chosen <- scran::getTopHVGs(hvg_data, n=number)
-  rowSubset(sce) <- chosen
+  SingleCellExperiment::rowSubset(sce) <- chosen
 
+  metadata(sce)$hvg_data <- hvg_data
   # Instead of adding values
   return(sce)
 }
@@ -91,12 +92,12 @@ perform_feature_selection <- function(sce, number=2000) {
 perform_dimensionality_reduction <- function(sce) {
   # maybe let people calculate using ICA, NMF???
   set.seed(1008796812)
-  sce <- scran::fixedPCA(sce, subset.row = rowData(sce)$subset)
+  sce <- scran::fixedPCA(sce, subset.row = SingleCellExperiment::rowData(sce)$subset)
   return(sce)
 }
 
 calculate_umap <- function(sce) {
   set.seed(1008796812) # My student number
-  sce <- runUMAP(sce, dimred="PCA")
+  sce <- scater::runUMAP(sce, dimred="PCA")
   return(sce)
 }
