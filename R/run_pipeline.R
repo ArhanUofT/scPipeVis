@@ -39,6 +39,11 @@
 #' }
 #'
 #' @export
+#' @importFrom scuttle logNormCounts
+#' @importFrom scran modelGeneVar getTopHVGs fixedPCA
+#' @importFrom scater runUMAP addPerCellQC
+#' @importFrom SingleCellExperiment rowData rowSubset
+#' @importFrom S4Vectors metadata
 run_pipeline <- function(sce) {
   # Assumption: Data is quality controlled and in a SingleCellExperiment object
   # We can design the pipeline to start from very scratch

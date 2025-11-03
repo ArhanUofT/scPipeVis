@@ -33,6 +33,8 @@
 #' }
 #'
 #' @export
+#' @importFrom S4Vectors metadata
+#' @importFrom scater plotReducedDim
 visualise_pipeline <- function(sce, colour_by = NA) {
   # Create few basic plots for now
   # Add more functionality after first submission
