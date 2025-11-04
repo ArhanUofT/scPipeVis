@@ -24,7 +24,7 @@ Single cell RNA sequencing (scRNA-seq) is a genomic approach used to quantify me
 
 ## Motivation
 
-A default single cell RNA sequencing data analysis pipeline comprises of several steps, from quality control, normalization of count matrix, feature selection, dimensionality reduction, clustering, annotating cell types, and then differential gene expression followed by gene set enrichment analysis. In my literature review, I found that all of these steps can be performed in so many different ways by using different methods at each step. This process is further complicated by tuning of hyperparameters at many different steps. Therefore, any user while analyzing their data, has to make so many choices/decisions at each step. These decisions, like tuning the hyperparameter or choosing the right method is absolutely not trivial. In other words, these choices at each step can affect your downstream analyses. Therefore, making well informed decisions are crucial. This is where scPipeVis comes in, following an extensive literature review, I have put together a pipeline that takes care of most of these above mentioned steps using the current best practices methods based on published reviews benchmarking different methods for all these steps. Further scPipeVis provides a function to visualize each step of the pipeline with many different and appropriate depictions. These depictions are chosen after going through the literature and figuring out what kind of visualizations are required at each step. Therefore, this part of the package will facilitate informed decision making for users as they go on to select the best suitable methods and hyper parameters which in turn best suits their own datasets and meets their needs.
+A default single cell RNA sequencing data analysis pipeline comprises of several steps, from quality control, normalization of count matrix, feature selection, dimensionality reduction, clustering, annotating cell types, and then differential gene expression followed by gene set enrichment analysis. In my literature review, I found that all of these steps can be performed in so many different ways by using different methods at each step. This process is further complicated by tuning of hyperparameters at many different steps. Therefore, any user while analyzing their data, has to make so many choices/decisions at each step. These decisions, like tuning the hyperparameter or choosing the right method is absolutely not trivial. In other words, these choices at each step can affect your downstream analyses. Therefore, making well informed decisions are crucial. This is where scPipeVis comes in, following an extensive literature review, I have put together a pipeline that takes care of most of these above mentioned steps using the current best practices methods based on published reviews benchmarking different methods for all these steps (Amezquita et al. 2019). Further scPipeVis provides a function to visualize each step of the pipeline with many different and appropriate depictions. These depictions are chosen after going through the literature and figuring out what kind of visualizations are required at each step. Therefore, this part of the package will facilitate informed decision making for users as they go on to select the best suitable methods and hyper parameters which in turn best suits their own datasets and meets their needs.
 
 ## Limitations of `scPipeVis`
 
@@ -89,7 +89,7 @@ TODO:
 visualise_pipeline(sce_processed)
 ```
 
-## customization
+## Customization
 NOTE: TODO - all the helper functions are to be made availaible to users so they can customize the pipeline by calling individual functions with additional arguments that would be passed to functions from other packages.\
 This is a design design that I am not sure I want to make yet because requires knowledge of my source code which in some sense defeats the purpose of this package.
 
@@ -100,7 +100,8 @@ sce_reloaded <- readRDS("sce_processed.rds")
 ```
 
 ## More thing to add
-TODO: To be added
+* Unsupervised clustering
+* Automated annotations
 
 ## References
 -   Amezquita RA, Lun ATL, Becht E, Carey VJ, Carpp LN, Geistlinger L, Marini F, Rue-Albrecht K, Risso D, Soneson C, et al. 2019 Dec 2. Orchestrating single-cell analysis with Bioconductor. Nature Methods. <doi:https://doi.org/10.1038/s41592-019-0654-x>.

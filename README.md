@@ -41,17 +41,17 @@ step. These decisions, like tuning the hyperparameter or choosing the
 right method is absolutely not trivial. In other words, these choices at
 each step can affect your downstream analyses. Therefore, making well
 informed decisions are crucial. This is where scPipeVis comes in,
-following an extensive literature review, I have put together a pipeline
-that takes care of most of these above mentioned steps using the current
-best practices methods based on published reviews benchmarking different
-methods for all these steps. Further scPipeVis provides a function to
-visualize each step of the pipeline with many different and appropriate
-depictions. These depictions are chosen after going through the
-literature and figuring out what kind of visualizations are required at
-each step. Therefore, this part of the package will facilitate informed
-decision making for users as they go on to select the best suitable
-methods and hyper parameters which in turn best suits their own datasets
-and meets their needs.
+following an extensive literature review (Amezquita et al. 2019), I have
+put together a pipeline that takes care of most of these above mentioned
+steps using the current best practices methods based on published
+reviews benchmarking different methods for all these steps. Further
+scPipeVis provides a function to visualize each step of the pipeline
+with many different and appropriate depictions. These depictions are
+chosen after going through the literature and figuring out what kind of
+visualizations are required at each step. Therefore, this part of the
+package will facilitate informed decision making for users as they go on
+to select the best suitable methods and hyper parameters which in turn
+best suits their own datasets and meets their needs.
 
 ### Limitations of `scPipeVis`
 
@@ -96,7 +96,8 @@ browseVignettes("scPipeVis")
     during exploratory scRNA-seq data analysis.
 
 Refer to package vignettes for more details. An overview of the package
-is illustrated below. TODO
+is illustrated below.  
+![](./inst/extdata/scPipeVis-rough-pipeline-sketch.png)
 
 ## Contributions
 
