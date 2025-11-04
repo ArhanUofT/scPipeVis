@@ -10,13 +10,12 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  eval = FALSE
+  comment = "#>"
 )
 ```
 
 ```{r setup}
-# library(scPipeVis)
+library(scPipeVis)
 ```
 
 ## Introduction
