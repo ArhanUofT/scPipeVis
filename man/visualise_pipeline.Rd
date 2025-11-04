@@ -9,7 +9,7 @@ visualise_pipeline(sce, colour_by = NA)
 \arguments{
 \item{sce}{A `SingleCellExperiment` object that has already been processed
 by the pipeline function `run_pipeline()` and contains all the information required to create typical visualisations
-that are part of analysing scRNA-seq data.}
+that are part of analysing scRNA-seq data (McCarthy et al. 2017).}
 
 \item{colour_by}{Optional. A character scalar naming a column in
 `colData(sce)` to use for colouring cells in the PCA/UMAP plots. Defaults to
@@ -42,4 +42,15 @@ visualise_pipeline(sce)
 visualise_pipeline(sce, colour_by = "cluster")
 }
 
+}
+\references{
+Amezquita RA, Lun ATL, Becht E, Carey VJ, Carpp LN, Geistlinger L, Marini F, Rue-Albrecht K, Risso D, Soneson C, et al. 2019 Dec 2. Orchestrating single-cell analysis with Bioconductor. Nature Methods. doi:https://doi.org/10.1038/s41592-019-0654-x.
+
+Lun ATL, McCarthy DJ, Marioni JC. 2016. A step-by-step workflow for low-level analysis of single-cell RNA-seq data with Bioconductor. F1000Research. 5:2122. doi:https://doi.org/10.12688/f1000research.9501.2.
+
+McCarthy DJ, Campbell KR, Lun ATL, Wills QF. 2017 Jan 14. Scater: pre-processing, quality control, normalization and visualization of single-cell RNA-seq data in R. Bioinformatics.:btw777. doi:https://doi.org/10.1093/bioinformatics/btw777.
+
+Wickham H. 2015. R Packages. “O’Reilly Media, Inc.”
+
+Zeisel A, Munoz-Manchado AB, Codeluppi S, Lonnerberg P, La Manno G, Jureus A, Marques S, Munguba H, He L, Betsholtz C, et al. 2015. Cell types in the mouse cortex and hippocampus revealed by single-cell RNA-seq. Science. 347(6226):1138–1142. doi:https://doi.org/10.1126/science.aaa1934.
 }
