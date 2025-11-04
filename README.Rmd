@@ -46,6 +46,10 @@ library("devtools")
 devtools::install_github("ArhanUofT/scPipeVis", build_vignettes = TRUE)
 library("scPipeVis")
 ```
+In case installation fails, because dependencies are not on CRAN, then run the following line of code before installation of the package to manually download the dependencies:
+```{r}
+BiocManager::install(c("S4Vectors", "SingleCellExperiment", "scater", "scran", "scuttle", "scRNAseq"))
+```
 
 ## Overview
 
