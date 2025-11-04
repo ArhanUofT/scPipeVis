@@ -90,17 +90,28 @@ visualise_pipeline(sce_processed)
 ```
 
 ## customization
-NOTE: all the helper functions are to be made availaible to users so they can customize the pipeline by calling individual functions with additional arguments that would be passed to functions from other packages.\
+NOTE: TODO - all the helper functions are to be made availaible to users so they can customize the pipeline by calling individual functions with additional arguments that would be passed to functions from other packages.\
 This is a design design that I am not sure I want to make yet because requires knowledge of my source code which in some sense defeats the purpose of this package.
 
-### Saving and reloading results
+## Saving and reloading results
 ```{r}
 saveRDS(sce_processed, file = "sce_processed.rds")
 sce_reloaded <- readRDS("sce_processed.rds")
 ```
 
+## More thing to add
+TODO: To be added
 
-## More to come
+## References
+-   Amezquita RA, Lun ATL, Becht E, Carey VJ, Carpp LN, Geistlinger L, Marini F, Rue-Albrecht K, Risso D, Soneson C, et al. 2019 Dec 2. Orchestrating single-cell analysis with Bioconductor. Nature Methods. <doi:https://doi.org/10.1038/s41592-019-0654-x>.
+-   Hadley Wickham. 2016. ggplot2 Elegant Graphics for Data Analysis. Cham Springer International Publishing.
+-   Hadley Wickham. 2019. Advanced R. Boca Raton: Chapman & Hall/Crc.
+-   Lun ATL, McCarthy DJ, Marioni JC. 2016. A step-by-step workflow for low-level analysis of single-cell RNA-seq data with Bioconductor. F1000Research. 5:2122. <doi:https://doi.org/10.12688/f1000research.9501.2>.
+-   McCarthy DJ, Campbell KR, Lun ATL, Wills QF. 2017 Jan 14. Scater: pre-processing, quality control, normalization and visualization of single-cell RNA-seq data in R. Bioinformatics.:btw777. <doi:https://doi.org/10.1093/bioinformatics/btw777>.
+-   Risso D, Cole M (2025). scRNAseq: Collection of Public Single-Cell RNA-Seq Datasets. <doi:10.18129/B9.bioc.scRNAseq>, R package version 2.23.1, <https://bioconductor.org/packages/scRNAseq>.
+-   Wickham H. 2015. R Packages. “O’Reilly Media, Inc.”
+-   Slides for BCB410 by professor Anjali Silva
+
 
 ## Session information {.unnumbered}
 
