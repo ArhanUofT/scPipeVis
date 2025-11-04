@@ -100,25 +100,46 @@ is illustrated below. TODO
 
 ## Contributions
 
-- `scPipeVis` was developed by Arhan Rupani, 4th Bioinformatics and
+- `scPipeVis` was developed by Arhan Rupani, 4th year Bioinformatics and
   Computational Biology student at the University of Toronto. The author
-  did an extensive literature review to understand the field of
-  scRNA-seq data analysis and created this pipeline.
+  did an extensive literature review to develop a basic understanding of
+  the field of scRNA-seq data analysis and created this pipeline.
 - The `run_pipeline` function was written by the author and runs a
   typical scRNA-seq pipeline given the counts matrix/data in a
   `SingleCellExperiment` object. The `visualise_pipeline` fucntion was
-  written by the author and creats typical plots which are used during
+  written by the author and creates typical plots which are used during
   exploratory scRNA-seq data analysis. Both the packages make use of
   functions implemented in already existing R packages made for
   scRNA-seq data analysis. These packages are mentioned below and their
   full references are in the References section below.
-- TODO Other packages used (just add names)
+- Packages used: SingleCellExperiment (Lun et al. 2016), scuttle
+  (McCarthy et al. 2017), scater (McCarthy et al. 2017), scran (Lun et
+  al. 2016), S4Vectors
 - Generative AI was not used at any point throughout the process of this
   package’s development
 
 ## References
 
-TODO
+- Amezquita RA, Lun ATL, Becht E, Carey VJ, Carpp LN, Geistlinger L,
+  Marini F, Rue-Albrecht K, Risso D, Soneson C, et al. 2019 Dec 2.
+  Orchestrating single-cell analysis with Bioconductor. Nature Methods.
+  <doi:https://doi.org/10.1038/s41592-019-0654-x>.
+- Hadley Wickham. 2016. ggplot2 Elegant Graphics for Data Analysis. Cham
+  Springer International Publishing.
+- Hadley Wickham. 2019. Advanced R. Boca Raton: Chapman & Hall/Crc.
+- Lun ATL, McCarthy DJ, Marioni JC. 2016. A step-by-step workflow for
+  low-level analysis of single-cell RNA-seq data with Bioconductor.
+  F1000Research. 5:2122.
+  <doi:https://doi.org/10.12688/f1000research.9501.2>.
+- McCarthy DJ, Campbell KR, Lun ATL, Wills QF. 2017 Jan 14. Scater:
+  pre-processing, quality control, normalization and visualization of
+  single-cell RNA-seq data in R. Bioinformatics.:btw777.
+  <doi:https://doi.org/10.1093/bioinformatics/btw777>.
+- Risso D, Cole M (2025). scRNAseq: Collection of Public Single-Cell
+  RNA-Seq Datasets. <doi:10.18129/B9.bioc.scRNAseq>, R package version
+  2.23.1, <https://bioconductor.org/packages/scRNAseq>.
+- Wickham H. 2015. R Packages. “O’Reilly Media, Inc.”
+- Slides for BCB410 by professor Anjali Silva
 
 ## Acknowledgements
 
