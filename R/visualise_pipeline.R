@@ -44,8 +44,8 @@ visualise_pipeline <- function(sce, colour_by = NA) {
   # maybe: visualise the elbow plot for PCA
   if (is.na(colour_by)) {
 
-    dec <- metadata(sce)$hvg_data
-    fit <- metadata(dec)
+    dec <- S4Vectors::metadata(sce)$hvg_data
+    fit <- S4Vectors::metadata(dec)
     plot(
       dec$mean,
       dec$var,
@@ -57,8 +57,8 @@ visualise_pipeline <- function(sce, colour_by = NA) {
     scater::plotReducedDim(sce, dimred="PCA")
     scater::plotReducedDim(sce, dimred="UMAP")
   } else {
-    dec <- metadata(sce)$hvg_data
-    fit <- metadata(dec)
+    dec <- S4Vectors::metadata(sce)$hvg_data
+    fit <- S4Vectors::metadata(dec)
     plot(
       dec$mean,
       dec$var,
