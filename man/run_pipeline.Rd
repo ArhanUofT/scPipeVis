@@ -4,58 +4,127 @@
 \alias{run_pipeline}
 \title{Run the Single-Cell RNA-Seq Processing Pipeline}
 \usage{
-run_pipeline(sce)
+run_pipeline(
+  sce,
+  run_qc = TRUE,
+  min_genes = 200,
+  min_counts = 1000,
+  n_hvg = 2000,
+  n_pcs = 20,
+  umap_n_neighbors = 15,
+  cluster_dimred = "PCA"
+)
 }
 \arguments{
-\item{sce}{A `SingleCellExperiment` object containing pre-quality-controlled
-single-cell RNA-seq data (McCarthy et al. 2017).}
+\item{sce}{A `SingleCellExperiment` object containing single-cell RNA-seq
+data with a `"counts"` assay (McCarthy et al. 2017).}
+
+\item{run_qc}{Logical; if `TRUE` (default), basic per-cell QC filtering
+is performed using library size and number of detected genes.}
+
+\item{min_genes}{Numeric; minimum number of detected genes required for a
+cell to pass QC. Default is `200`.}
+
+\item{min_counts}{Numeric; minimum total counts required for a cell to pass
+QC. Default is `1000`.}
+
+\item{n_hvg}{Numeric; number of highly variable genes to select for
+downstream analysis. Default is `2000`.}
+
+\item{n_pcs}{Numeric; number of principal components to retain in PCA.
+Default is `20`.}
+
+\item{umap_n_neighbors}{Numeric; number of neighbors used by UMAP.
+Default is `15`.}
+
+\item{cluster_dimred}{Character; which reduced dimension to use for
+clustering (e.g., `"PCA"` or `"UMAP"`). Default is `"PCA"`.}
 }
 \value{
-A processed `SingleCellExperiment` object containing normalized counts,
-selected features, reduced dimensional representations (PCA), and UMAP coordinates.
+A processed `SingleCellExperiment` object containing:
+\itemize{
+  \item QC metrics and an optional `qc_pass` column in `colData(sce)`
+  \item normalized counts (`logcounts` assay)
+  \item highly variable gene information stored in `metadata(sce)$hvg_data`
+  \item PCA coordinates (`reducedDims(sce)$PCA`)
+  \item UMAP coordinates (`reducedDims(sce)$UMAP`)
+  \item cluster labels in `colData(sce)$cluster_id`
+  \item pipeline configuration stored in `metadata(sce)$pipeline`
+}
 }
 \description{
 This function executes a standardized single-cell RNA-seq processing pipeline
-using a provided `SingleCellExperiment` object. The pipeline includes normalization,
-feature selection, dimensionality reduction, and calculating UMAP embedding. Methods and default values have been chosen for each step based on literature review so user can simply run the function for very preliminary results without having to worry about method selection and hyperparameter tuning at each step (Amezquita et al. 2019, Lun et al. 2016).
-Each processing step is applied sequentially and the resulting object is stored in `sce` variable to conserve memory.
+using a provided `SingleCellExperiment` object. The pipeline includes:
+optional quality control filtering, normalization, feature selection,
+dimensionality reduction, UMAP embedding, and unsupervised clustering.
+Methods and default values have been chosen based on benchmarking and
+workflow literature so users can run a preliminary analysis with a single
+function call (Amezquita et al. 2019; Lun et al. 2016).
 }
 \details{
 The pipeline performs the following steps in order:
 \enumerate{
-  \item Normalization using `scuttle::logNormCounts()` (McCarthy et al. 2017)
-  \item Feature selection of highly variable genes using `scran::modelGeneVar()` (McCarthy et al. 2017)
-  \item Dimensionality reduction with `scran::fixedPCA()` (McCarthy et al. 2017)
-  \item UMAP embedding with `scater::runUMAP()` (McCarthy et al. 2017)
+  \item Input validation to ensure `sce` is a `SingleCellExperiment`
+        with a valid `"counts"` assay.
+  \item (Optional) Per-cell QC with `scater::addPerCellQC()`, followed by
+        filtering based on `min_genes` and `min_counts`.
+  \item Normalization of counts using `scuttle::logNormCounts()`.
+  \item Feature selection: highly variable genes via `scran::modelGeneVar()`
+        and `scran::getTopHVGs()`.
+  \item Dimensionality reduction using `scran::fixedPCA()`.
+  \item UMAP embedding using `scater::runUMAP()` on the PCA space.
+  \item Unsupervised clustering using `scater::clusterCells()` on the
+        reduced dimension specified by `cluster_dimred`.
 }
-Each step uses the corresponding helper function (`perform_normalization`,
-`perform_feature_selection`, etc.).
+
+Each step is delegated to a dedicated helper function
+(`validate_sce_input()`, `perform_qc()`, `perform_normalization()`,
+`perform_feature_selection()`, `perform_dimensionality_reduction()`,
+`calculate_umap()`, `perform_clustering()`), which improves modularity,
+readability, and testability of the code. The overall configuration of the
+pipeline run is stored in `metadata(sce)$pipeline` for transparency and
+reproducibility.
 }
 \note{
-Unsupervised clustering and automated annotations are to be added in to the pipeline to make it extensive.
+This implementation is intended for preliminary exploratory analysis.
+More advanced features (e.g., doublet detection, batch correction, automated
+cell-type annotation) can be layered on top of the returned object in
+downstream analyses.
 }
 \examples{
 \dontrun{
-# Load example data from the scRNAseq package
 library(scRNAseq)
 library(SingleCellExperiment)
 
-# Example dataset: Zeisel et al. 2015 mouse brain data
 sce <- ZeiselBrainData()
+sce_processed <- run_pipeline(
+  sce,
+  run_qc = TRUE,
+  n_hvg = 2000,
+  n_pcs = 20,
+  umap_n_neighbors = 15,
+  cluster_dimred = "PCA"
+)
 
-# Run the pipeline
-sce_processed <- run_pipeline(sce)
+summarize_clusters(sce_processed)
 }
 
 }
 \references{
-Amezquita RA, Lun ATL, Becht E, Carey VJ, Carpp LN, Geistlinger L, Marini F, Rue-Albrecht K, Risso D, Soneson C, et al. 2019 Dec 2. Orchestrating single-cell analysis with Bioconductor. Nature Methods. doi:https://doi.org/10.1038/s41592-019-0654-x.
+Amezquita RA, Lun ATL, Becht E, Carey VJ, Carpp LN, Geistlinger L, Marini F,
+Rue-Albrecht K, Risso D, Soneson C, et al. 2019. Orchestrating single-cell
+analysis with Bioconductor. Nature Methods.
 
-Lun ATL, McCarthy DJ, Marioni JC. 2016. A step-by-step workflow for low-level analysis of single-cell RNA-seq data with Bioconductor. F1000Research. 5:2122. doi:https://doi.org/10.12688/f1000research.9501.2.
+Lun ATL, McCarthy DJ, Marioni JC. 2016. A step-by-step workflow for low-level
+analysis of single-cell RNA-seq data with Bioconductor. F1000Research. 5:2122.
 
-McCarthy DJ, Campbell KR, Lun ATL, Wills QF. 2017 Jan 14. Scater: pre-processing, quality control, normalization and visualization of single-cell RNA-seq data in R. Bioinformatics.:btw777. doi:https://doi.org/10.1093/bioinformatics/btw777.
+McCarthy DJ, Campbell KR, Lun ATL, Wills QF. 2017. Scater: pre-processing,
+quality control, normalization and visualization of single-cell RNA-seq data
+in R. Bioinformatics.
 
 Wickham H. 2015. R Packages. “O’Reilly Media, Inc.”
 
-Zeisel A, Munoz-Manchado AB, Codeluppi S, Lonnerberg P, La Manno G, Jureus A, Marques S, Munguba H, He L, Betsholtz C, et al. 2015. Cell types in the mouse cortex and hippocampus revealed by single-cell RNA-seq. Science. 347(6226):1138–1142. doi:https://doi.org/10.1126/science.aaa1934.
+Zeisel A, Munoz-Manchado AB, Codeluppi S, Lonnerberg P, La Manno G, Jureus A,
+Marques S, Munguba H, He L, Betsholtz C, et al. 2015. Cell types in the mouse
+cortex and hippocampus revealed by single-cell RNA-seq. Science.
 }

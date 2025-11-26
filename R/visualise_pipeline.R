@@ -6,87 +6,100 @@
 #' `scran::modelGeneVar()` that was stored in `metadata(sce)$hvg_data`), and then
 #' plots low-dimensional embeddings (PCA and UMAP). If `colour_by` is supplied,
 #' the reduced-dimension plots will be coloured by the specified column in
-#' `colData(sce)`.
+#' `colData(sce)`. If `colour_by` is not supplied and a `cluster_id` column is
+#' present in `colData(sce)`, cells will be coloured by `cluster_id` by default.
 #'
 #' @param sce A `SingleCellExperiment` object that has already been processed
-#' by the pipeline function `run_pipeline()` and contains all the information required to create typical visualisations
-#' that are part of analysing scRNA-seq data (McCarthy et al. 2017).
-#' @param colour_by Optional. A character scalar naming a column in
-#' `colData(sce)` to use for colouring cells in the PCA/UMAP plots. Defaults to
-#' `NA`, in which case no colouring is applied.
-#' Unsupervised clustering step is not yet implemented but extremely useful parameter after implementation of clustering
+#'   by the pipeline function `run_pipeline()`.
+#' @param colour_by Optional character scalar naming a column in
+#'   `colData(sce)` to use for colouring cells in PCA/UMAP plots. If `NULL`
+#'   (default), the function will:
+#'   \enumerate{
+#'     \item Use `"cluster_id"` when present in `colData(sce)`, or
+#'     \item Fall back to default colouring if `cluster_id` is not available.
+#'   }
 #'
-#' @details
-#' This function assumes that:
-#' \itemize{
-#'   \item `run_pipeline()` function was run on a `SingleCellExperiment` object and strictly that
-#'    the output of that function is the input to this function.
-#' }
-#'
-#' @return The function does not explicitely return anything but is called for its
-#' side-effect of producing plots.
-#'
-#' @examples
-#' \dontrun{
-#' visualise_pipeline(sce)
-#' visualise_pipeline(sce, colour_by = "cluster")
-#' }
-#'
-#' @references
-#' Amezquita RA, Lun ATL, Becht E, Carey VJ, Carpp LN, Geistlinger L, Marini F, Rue-Albrecht K, Risso D, Soneson C, et al. 2019 Dec 2. Orchestrating single-cell analysis with Bioconductor. Nature Methods. doi:https://doi.org/10.1038/s41592-019-0654-x.
-#'
-#' Lun ATL, McCarthy DJ, Marioni JC. 2016. A step-by-step workflow for low-level analysis of single-cell RNA-seq data with Bioconductor. F1000Research. 5:2122. doi:https://doi.org/10.12688/f1000research.9501.2.
-#'
-#' McCarthy DJ, Campbell KR, Lun ATL, Wills QF. 2017 Jan 14. Scater: pre-processing, quality control, normalization and visualization of single-cell RNA-seq data in R. Bioinformatics.:btw777. doi:https://doi.org/10.1093/bioinformatics/btw777.
-#'
-#' Wickham H. 2015. R Packages. “O’Reilly Media, Inc.”
-#'
-#' Zeisel A, Munoz-Manchado AB, Codeluppi S, Lonnerberg P, La Manno G, Jureus A, Marques S, Munguba H, He L, Betsholtz C, et al. 2015. Cell types in the mouse cortex and hippocampus revealed by single-cell RNA-seq. Science. 347(6226):1138–1142. doi:https://doi.org/10.1126/science.aaa1934.
+#' @return Invisibly returns `NULL`. Called for its side-effect of producing plots.
 #'
 #' @export
 #' @importFrom S4Vectors metadata
 #' @importFrom scater plotReducedDim
-visualise_pipeline <- function(sce, colour_by = NA) {
-  # Create few basic plots for now
-  # Add more functionality after first submission
-  # Right now the function is bare bones, but I will reimplement this using the tidyverse + ggplot2 framework
-
-  # Visualising the mean variance relationship for the genes
-  # maybe: visualise the elbow plot for PCA
-  if (is.na(colour_by)) {
-
-    dec <- S4Vectors::metadata(sce)$hvg_data
-    fit <- S4Vectors::metadata(dec)
-    plot(
-      dec$mean,
-      dec$var,
-      xlab = "Mean of log-expression",
-      ylab = "Variance of log-expression"
+#' @importFrom SingleCellExperiment reducedDims
+#' @importFrom SummarizedExperiment colData
+visualise_pipeline <- function(sce, colour_by = NULL) {
+  # 1) Check HVG statistics are available
+  hvg_data <- S4Vectors::metadata(sce)$hvg_data
+  if (is.null(hvg_data)) {
+    stop(
+      "No 'hvg_data' found in metadata(sce). ",
+      "Did you run `run_pipeline()` (with feature selection) first?",
+      call. = FALSE
     )
-    curve(fit$trend(x), col = "dodgerblue", add = TRUE, lwd = 2)
+  }
 
-    scater::plotReducedDim(sce, dimred="PCA")
-    scater::plotReducedDim(sce, dimred="UMAP")
-  } else {
-    dec <- S4Vectors::metadata(sce)$hvg_data
-    fit <- S4Vectors::metadata(dec)
-    plot(
-      dec$mean,
-      dec$var,
-      xlab = "Mean of log-expression",
-      ylab = "Variance of log-expression"
+  fit <- S4Vectors::metadata(hvg_data)
+  if (is.null(fit) || is.null(fit$trend)) {
+    stop(
+      "No trend fit found in metadata(hvg_data). ",
+      "Check that feature selection via scran::modelGeneVar() completed correctly.",
+      call. = FALSE
     )
-    curve(fit$trend(x), col = "dodgerblue", add = TRUE, lwd = 2)
+  }
 
+  # 2) Check PCA and UMAP are present
+  rd_names <- names(SingleCellExperiment::reducedDims(sce))
+  if (!"PCA" %in% rd_names) {
+    stop(
+      "Reduced dimension 'PCA' not found in `reducedDims(sce)`. ",
+      "Did you run `run_pipeline()` (with dimensionality reduction) first?",
+      call. = FALSE
+    )
+  }
+  if (!"UMAP" %in% rd_names) {
+    stop(
+      "Reduced dimension 'UMAP' not found in `reducedDims(sce)`. ",
+      "Did you run `run_pipeline()` (with UMAP calculation) first?",
+      call. = FALSE
+    )
+  }
 
-    # colour_by feature will be useful once unsupervised clustering is incorporated in the pipeline
-    scater::plotReducedDim(sce, dimred="PCA", colour_by=colour_by)
-    scater::plotReducedDim(sce, dimred="UMAP", colour_by=colour_by)
-
-    # Reference for the code - in text citation as was told to be added in the class
-    # (Amezquita et al. 2019)
-    # Also added in the function documentation
+  # 3) Decide on colouring: default to cluster_id if present
+  cd <- SummarizedExperiment::colData(sce)
+  if (is.null(colour_by)) {
+    if ("cluster_id" %in% colnames(cd)) {
+      colour_by <- "cluster_id"
     }
-}
+  } else {
+    if (!colour_by %in% colnames(cd)) {
+      stop(
+        sprintf("Column '%s' not found in colData(sce). ", colour_by),
+        "Available columns include: ",
+        paste(colnames(cd), collapse = ", "),
+        call. = FALSE
+      )
+    }
+  }
 
-# Break this functions into subfunctions
+  # 4) Mean–variance plot for HVGs (base R plot)
+  plot(
+    hvg_data$mean,
+    hvg_data$var,
+    xlab = "Mean of log-expression",
+    ylab = "Variance of log-expression"
+  )
+  curve(fit$trend(x), col = "dodgerblue", add = TRUE, lwd = 2)
+
+  # 5) PCA and UMAP plots (ggplot objects -> must be printed)
+  if (is.null(colour_by)) {
+    p_pca  <- scater::plotReducedDim(sce, dimred = "PCA")
+    p_umap <- scater::plotReducedDim(sce, dimred = "UMAP")
+  } else {
+    p_pca  <- scater::plotReducedDim(sce, dimred = "PCA",  colour_by = colour_by)
+    p_umap <- scater::plotReducedDim(sce, dimred = "UMAP", colour_by = colour_by)
+  }
+
+  print(p_pca)
+  print(p_umap)
+
+  invisible(NULL)
+}
