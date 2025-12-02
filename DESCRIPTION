@@ -23,6 +23,11 @@ VignetteBuilder: knitr
 RoxygenNote: 7.3.3
 biocViews:
 Imports: 
+    SummarizedExperiment, 
+    ggplot2, 
+    patchwork, 
+    shiny, 
+    viridis,
     S4Vectors,
     scater,
     scran,
