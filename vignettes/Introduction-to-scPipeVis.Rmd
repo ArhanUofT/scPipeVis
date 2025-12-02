@@ -106,7 +106,7 @@ table(colData(sce_processed)$cluster_id)
 
 ```
 
-### Visualizing workflow results
+## Visualizing workflow results
 
 `visualise_pipeline()` produces plots illustrating major steps:
 
@@ -137,19 +137,45 @@ plot_gene_on_umap(sce_processed, gene = "Gad1")
 
 This enables identification of cluster-specific markers.
 
-NOTE: TODO - all the helper functions are to be made availaible to users so they can customize the pipeline by calling individual functions with additional arguments that would be passed to functions from other packages.\
-This is a design design that I am not sure I want to make yet because requires knowledge of my source code which in some sense defeats the purpose of this package.
-
 ## Saving and reloading results
+
+`SingleCellExperiment` objects can be saved and restored easily:
 
 ```{r}
 saveRDS(sce_processed, file = "sce_processed.rds")
 sce_reloaded <- readRDS("sce_processed.rds")
 ```
 
+## Interactive Shiny App
+
+`scPipeVis` includes an interactive Shiny application designed for quick exploratory analysis without writing code.
+
+Launch the app:
+
+```{r}
+run_scPipeVis_app()
+
+```
+
+or supply your own dataset:
+
+```{r}
+run_scPipeVis_app(sce = sce_processed)
+
+```
+
+The Shiny app:
+
+-   runs the pipeline internally
+
+-   provides a searchable dropdown of all genes
+
+-   displays a clean UMAP plot of the selected gene's expression
+
+-   includes summary statistics for the chosen gene
+
 ## More thing to add
 
--   Unsupervised clustering
 -   Automated annotations
 
 ## References
