@@ -30,16 +30,28 @@ A default single cell RNA sequencing data analysis pipeline comprises of several
 
 This package is created for preliminary data analysis of scRNA-seq data, at the end of the day the user will have to eventually figure out if certain methods work better to answer the question that they are trying to answer using their data. The user will also eventually have to tune hyperparameters of certain functions, if they dont get satisfactory results from this pipeline. Last but not the least, here I don't provide an exhaustive set of visualizations. I will continue working on the package to add more and more visualizations and make the pipeline more end to end.
 
-## Setting up the data
+## What the package provides
 
-We’ll use a small, well-known public dataset from the `scRNAseq` package.
+`scPipeVis` includes four main components:
+
+1.  `run_pipeline()` Runs a standard scRNA-seq preprocessing workflow: QC summarization, log-normalization, highly variable gene detection, PCA, UMAP, and unsupervised clustering.
+
+2.  `visualise_pipeline()` Generates diagnostic plots including the HVG mean–variance trend, PCA and UMAP embeddings, and simple QC/clustering summaries.
+
+3.  `plot_gene_on_umap()` Produces a viridis-coloured UMAP plot showing the expression of a user-specified gene.
+
+4.  `run_scPipeVis_app()` Launches the Shiny application for interactive gene-on-UMAP visualization. The app can use either a built-in demo dataset or a user-provided `SingleCellExperiment`.
+
+## Loading and preparing data
+
+We will demonstrate the workflow using a public dataset from the `scRNAseq` package. If needed, install it using:
 
 ```{r}
 # install.packages("BiocManager")
 BiocManager::install("scRNAseq")
 ```
 
-Load the dataset (Zeisel et al., 2015 mouse brain):
+Load the dataset (Zeisel et al., 2015 mouse brain) and inspect the object:
 
 ```{r}
 library(scRNAseq)
@@ -49,19 +61,25 @@ sce <- ZeiselBrainData()
 sce
 ```
 
-## Using the two main functions
+This dataset contains mouse brain cells with raw counts and cell metadata in a `SingleCellExperiment`, which is the input format expected by `scPipeVis`
 
-### 1. Run the pipeline
+## Running the pipeline
 
-`run_pipeline()` performs:
+`run_pipeline()` performs the following steps:
 
-1\. log-normalization (`scuttle::logNormCounts`)
+-   **QC summarization** using `scater::addPerCellQC()`
 
-2\. HVG selection (`scran::modelGeneVar + getTopHVGs`) and stores the variance model in `metadata(sce)$hvg_data`
+-   **Log-normalization** using `scuttle::logNormCounts()`
 
-3\. PCA (`scran::fixedPCA`) using the selected genes
+-   **HVG detection** using `scran::modelGeneVar()` and `scran::getTopHVGs()`
 
-4\. UMAP (`scater::runUMAP`) from PCA
+-   **PCA** using HVGs via `scran::fixedPCA()`
+
+-   **UMAP embedding** via `scater::runUMAP()`
+
+-   **Graph-based clustering** using an SNN graph (`scran::buildSNNGraph()`)
+
+Run the pipeline:
 
 ```{r}
 library(scPipeVis)
@@ -69,41 +87,73 @@ sce_processed <- run_pipeline(sce)
 sce_processed
 ```
 
-Check that reduced dimensions were created:
+Inspect available reduced dimensions:
 
 ```{r}
 names(reducedDims(sce_processed))
 ```
 
-Inspect the stored HVG variance model:
+InExamine HVG model results:
 
 ```{r}
-# TODO
+metadata(sce_processed)$hvg_data
 ```
 
-### 2. Visualize outputs
+Check clustering:
 
-`visualise_pipeline()` renders the mean–variance fit and low-dimensional projections (PCA & UMAP). You can optionally color by a column in `colData(sce)`.\
-TODO: 
+```{r}
+table(colData(sce_processed)$cluster_id)
+
+```
+
+### Visualizing workflow results
+
+`visualise_pipeline()` produces plots illustrating major steps:
+
 ```{r}
 visualise_pipeline(sce_processed)
 ```
 
-## Customization
+This includes:
+
+-   the mean–variance trend from HVG selection
+
+-   a PCA embedding
+
+-   a UMAP embedding
+
+-   automatic colouring based on `cluster_id`
+
+These plots are useful for diagnosing whether the structure of the data is captured appropriately.
+
+## Gene expression visualisation
+
+To explore how individual genes behave across clusters in the UMAP embedding, use:
+
+```{r}
+plot_gene_on_umap(sce_processed, gene = "Gad1")
+
+```
+
+This enables identification of cluster-specific markers.
+
 NOTE: TODO - all the helper functions are to be made availaible to users so they can customize the pipeline by calling individual functions with additional arguments that would be passed to functions from other packages.\
 This is a design design that I am not sure I want to make yet because requires knowledge of my source code which in some sense defeats the purpose of this package.
 
 ## Saving and reloading results
+
 ```{r}
 saveRDS(sce_processed, file = "sce_processed.rds")
 sce_reloaded <- readRDS("sce_processed.rds")
 ```
 
 ## More thing to add
-* Unsupervised clustering
-* Automated annotations
+
+-   Unsupervised clustering
+-   Automated annotations
 
 ## References
+
 -   Amezquita RA, Lun ATL, Becht E, Carey VJ, Carpp LN, Geistlinger L, Marini F, Rue-Albrecht K, Risso D, Soneson C, et al. 2019 Dec 2. Orchestrating single-cell analysis with Bioconductor. Nature Methods. <doi:https://doi.org/10.1038/s41592-019-0654-x>.
 -   Hadley Wickham. 2016. ggplot2 Elegant Graphics for Data Analysis. Cham Springer International Publishing.
 -   Hadley Wickham. 2019. Advanced R. Boca Raton: Chapman & Hall/Crc.
@@ -112,7 +162,6 @@ sce_reloaded <- readRDS("sce_processed.rds")
 -   Risso D, Cole M (2025). scRNAseq: Collection of Public Single-Cell RNA-Seq Datasets. <doi:10.18129/B9.bioc.scRNAseq>, R package version 2.23.1, <https://bioconductor.org/packages/scRNAseq>.
 -   Wickham H. 2015. R Packages. “O’Reilly Media, Inc.”
 -   Slides for BCB410 by professor Anjali Silva
-
 
 ## Session information {.unnumbered}
 
