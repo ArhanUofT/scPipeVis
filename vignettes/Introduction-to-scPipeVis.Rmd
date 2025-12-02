@@ -142,8 +142,9 @@ This enables identification of cluster-specific markers.
 `SingleCellExperiment` objects can be saved and restored easily:
 
 ```{r}
-saveRDS(sce_processed, file = "sce_processed.rds")
-sce_reloaded <- readRDS("sce_processed.rds")
+# Uncomment to run
+# saveRDS(sce_processed, file = "sce_processed.rds")
+# sce_reloaded <- readRDS("sce_processed.rds")
 ```
 
 ## Interactive Shiny App
@@ -153,14 +154,16 @@ sce_reloaded <- readRDS("sce_processed.rds")
 Launch the app:
 
 ```{r}
-run_scPipeVis_app()
+# Uncomment to run
+# run_scPipeVis_app()
 
 ```
 
 or supply your own dataset:
 
 ```{r}
-run_scPipeVis_app(sce = sce_processed)
+# Uncomment to run
+# run_scPipeVis_app(sce = sce_processed)
 
 ```
 
