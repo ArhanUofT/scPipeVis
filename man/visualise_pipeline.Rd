@@ -4,27 +4,28 @@
 \alias{visualise_pipeline}
 \title{Visualize key steps of the single-cell analysis pipeline}
 \usage{
-visualise_pipeline(sce, colour_by = NULL)
+visualise_pipeline(
+  sce,
+  colour_by = NULL,
+  print_plots = TRUE,
+  save_path = "scPipeVis_combined_plot.png"
+)
 }
 \arguments{
-\item{sce}{A `SingleCellExperiment` object that has already been processed
-by the pipeline function `run_pipeline()`.}
+\item{sce}{A processed SingleCellExperiment object.}
 
-\item{colour_by}{Optional character scalar naming a column in
-`colData(sce)` to use for colouring cells in PCA/UMAP plots. If `NULL`
-(default), the function will:
-\enumerate{
-  \item Use `"cluster_id"` when present in `colData(sce)`, or
-  \item Fall back to default colouring if `cluster_id` is not available.
-}}
+\item{colour_by}{Optional column name in colData(sce) used to colour PCA/UMAP.}
+
+\item{print_plots}{Logical; if TRUE prints all plots. Default TRUE.}
+
+\item{save_path}{File path to save the combined plot. Default:
+"scPipeVis_combined_plot.png".}
 }
 \value{
-Invisibly returns `NULL`. Called for its side-effect of producing plots.
+A list of ggplot objects invisibly.
 }
 \description{
-This function produces quick diagnostic plots from a processed
-`SingleCellExperiment` object. It visualizes the mean–variance relationship
-estimated during feature selection (output of `scran::modelGeneVar()`
-stored in `metadata(sce)$hvg_data`), low-dimensional embeddings (PCA and
-UMAP), and, when available, basic QC and cluster-level summaries.
+Produces diagnostic plots (HVG trend, PCA, UMAP, QC, clusters) and returns
+them as a named list. Optionally prints them and also saves a *combined*
+multi-panel figure as a PNG file using patchwork.
 }
