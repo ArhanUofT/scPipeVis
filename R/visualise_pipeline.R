@@ -1,66 +1,64 @@
 #' Visualize key steps of the single-cell analysis pipeline
 #'
-#' This function produces quick diagnostic plots from a processed
-#' `SingleCellExperiment` object. It visualizes the mean–variance relationship
-#' estimated during feature selection (output of `scran::modelGeneVar()`
-#' stored in `metadata(sce)$hvg_data`), low-dimensional embeddings (PCA and
-#' UMAP), and, when available, basic QC and cluster-level summaries.
+#' Produces diagnostic plots (HVG trend, PCA, UMAP, QC, clusters) and returns
+#' them as a named list. Optionally prints them and also saves a *combined*
+#' multi-panel figure as a PNG file using patchwork.
 #'
-#' @param sce A `SingleCellExperiment` object that has already been processed
-#'   by the pipeline function `run_pipeline()`.
-#' @param colour_by Optional character scalar naming a column in
-#'   `colData(sce)` to use for colouring cells in PCA/UMAP plots. If `NULL`
-#'   (default), the function will:
-#'   \enumerate{
-#'     \item Use `"cluster_id"` when present in `colData(sce)`, or
-#'     \item Fall back to default colouring if `cluster_id` is not available.
-#'   }
+#' @param sce A processed SingleCellExperiment object.
+#' @param colour_by Optional column name in colData(sce) used to colour PCA/UMAP.
+#' @param print_plots Logical; if TRUE prints all plots. Default TRUE.
+#' @param save_path File path to save the combined plot. Default:
+#'        "scPipeVis_combined_plot.png".
 #'
-#' @return Invisibly returns `NULL`. Called for its side-effect of producing plots.
+#' @return A list of ggplot objects invisibly.
 #'
 #' @export
 #' @importFrom S4Vectors metadata
-#' @importFrom scater plotReducedDim
-#' @importFrom SingleCellExperiment reducedDims
 #' @importFrom SummarizedExperiment colData
-visualise_pipeline <- function(sce, colour_by = NULL) {
-  # --- Step 1: Validate HVG data ---
+#' @importFrom SingleCellExperiment reducedDims
+#' @importFrom scater plotReducedDim
+#' @importFrom ggplot2 ggplot aes geom_point geom_histogram geom_col labs theme_minimal stat_function ggsave
+#' @importFrom patchwork wrap_plots
+visualise_pipeline <- function(
+    sce,
+    colour_by   = NULL,
+    print_plots = TRUE,
+    save_path   = "scPipeVis_combined_plot.png"
+) {
+  ## --- Validate HVG info ---
   hvg_data <- S4Vectors::metadata(sce)$hvg_data
   if (is.null(hvg_data)) {
-    stop(
-      "No 'hvg_data' found in metadata(sce). ",
-      "Did you run `run_pipeline()` (with feature selection) first?",
-      call. = FALSE
-    )
+    stop("No 'hvg_data' found in metadata(sce). Did you run run_pipeline()?", call. = FALSE)
   }
 
   fit <- S4Vectors::metadata(hvg_data)
   if (is.null(fit) || is.null(fit$trend)) {
+    stop("No trend fit found in metadata(hvg_data). Check scran::modelGeneVar().", call. = FALSE)
+  }
+
+  ## --- Sanely pick variance column: var / total / bio ---
+  hvg_cols <- colnames(hvg_data)
+  var_candidate <- intersect(c("var", "total", "bio"), hvg_cols)
+  if (length(var_candidate) == 0L) {
     stop(
-      "No trend fit found in metadata(hvg_data). ",
-      "Check that feature selection via scran::modelGeneVar() completed correctly.",
+      "Could not find a variance column in hvg_data. ",
+      "Looked for one of: 'var', 'total', 'bio'. ",
+      "Available columns: ", paste(hvg_cols, collapse = ", "),
       call. = FALSE
     )
   }
+  var_col_name <- var_candidate[1]
 
-  # --- Step 2: Confirm PCA and UMAP exist ---
+  ## --- Check reduced dimensions ---
   rd_names <- names(SingleCellExperiment::reducedDims(sce))
   if (!"PCA" %in% rd_names) {
-    stop(
-      "Reduced dimension 'PCA' not found in `reducedDims(sce)`. ",
-      "Did you run `run_pipeline()` (with dimensionality reduction) first?",
-      call. = FALSE
-    )
+    stop("Reduced dimension 'PCA' not found in reducedDims(sce).", call. = FALSE)
   }
   if (!"UMAP" %in% rd_names) {
-    stop(
-      "Reduced dimension 'UMAP' not found in `reducedDims(sce)`. ",
-      "Did you run `run_pipeline()` (with UMAP calculation) first?",
-      call. = FALSE
-    )
+    stop("Reduced dimension 'UMAP' not found in reducedDims(sce).", call. = FALSE)
   }
 
-  # --- Step 3: Decide colouring logic ---
+  ## --- Decide colouring logic ---
   cd <- SummarizedExperiment::colData(sce)
   if (is.null(colour_by)) {
     if ("cluster_id" %in% colnames(cd)) {
@@ -69,23 +67,33 @@ visualise_pipeline <- function(sce, colour_by = NULL) {
   } else if (!colour_by %in% colnames(cd)) {
     stop(
       sprintf("Column '%s' not found in colData(sce). ", colour_by),
-      "Available columns include: ",
-      paste(colnames(cd), collapse = ", "),
+      "Available columns: ", paste(colnames(cd), collapse = ", "),
       call. = FALSE
     )
   }
 
-  # --- Step 4: Mean–variance plot for HVGs ---
-  plot(
-    hvg_data$mean,
-    hvg_data$var,
-    xlab = "Mean of log-expression",
-    ylab = "Variance of log-expression",
-    main = "Mean–Variance Trend of Genes"
-  )
-  curve(fit$trend(x), col = "dodgerblue", add = TRUE, lwd = 2)
+  ## --- Plot container ---
+  plt_list <- list()
 
-  # --- Step 5: PCA & UMAP plots ---
+  ## --- HVG mean–variance plot ---
+  mv_df <- data.frame(
+    mean = hvg_data$mean,
+    var  = hvg_data[[var_col_name]]
+  )
+
+  p_mean_var <- ggplot2::ggplot(mv_df, ggplot2::aes(x = mean, y = var)) +
+    ggplot2::geom_point(alpha = 0.4) +
+    ggplot2::stat_function(fun = fit$trend, colour = "dodgerblue", linewidth = 1) +
+    ggplot2::labs(
+      x = "Mean log-expression",
+      y = paste0("Variance (", var_col_name, ")"),
+      title = "HVG mean–variance trend"
+    ) +
+    ggplot2::theme_minimal()
+
+  plt_list$mean_variance <- p_mean_var
+
+  ## --- PCA & UMAP ---
   if (is.null(colour_by)) {
     p_pca  <- scater::plotReducedDim(sce, dimred = "PCA")
     p_umap <- scater::plotReducedDim(sce, dimred = "UMAP")
@@ -93,73 +101,88 @@ visualise_pipeline <- function(sce, colour_by = NULL) {
     p_pca  <- scater::plotReducedDim(sce, dimred = "PCA",  colour_by = colour_by)
     p_umap <- scater::plotReducedDim(sce, dimred = "UMAP", colour_by = colour_by)
   }
+  plt_list$pca  <- p_pca
+  plt_list$umap <- p_umap
 
-  print(p_pca)
-  print(p_umap)
-
-  # --- Step 6: QC plots (if QC metrics exist) ---
+  ## --- QC plots (if QC metrics present) ---
   if (all(c("sum", "detected") %in% colnames(cd))) {
-    # Library size vs detected genes
-    plot(
-      cd$sum,
-      cd$detected,
-      xlab = "Library size (sum of counts)",
-      ylab = "Number of detected genes",
-      main = "QC: Library size vs detected genes"
-    )
+    qc_df <- as.data.frame(cd)
 
-    # Histogram of library size
-    hist(
-      cd$sum,
-      breaks = 50,
-      xlab = "Library size (sum of counts)",
-      main = "QC: Distribution of library sizes",
-      col = "grey80",
-      border = "grey40"
-    )
+    plt_list$qc_lib_vs_detected <- ggplot2::ggplot(
+      qc_df,
+      ggplot2::aes(x = sum, y = detected)
+    ) +
+      ggplot2::geom_point(alpha = 0.4) +
+      ggplot2::labs(
+        x = "Library size (sum of counts)",
+        y = "Number of detected genes",
+        title = "QC: Library size vs detected genes"
+      ) +
+      ggplot2::theme_minimal()
 
-    # Histogram of detected genes
-    hist(
-      cd$detected,
-      breaks = 50,
-      xlab = "Number of detected genes",
-      main = "QC: Distribution of detected genes",
-      col = "grey80",
-      border = "grey40"
-    )
+    plt_list$qc_lib_hist <- ggplot2::ggplot(qc_df, ggplot2::aes(x = sum)) +
+      ggplot2::geom_histogram(bins = 50) +
+      ggplot2::labs(
+        x = "Library size (sum of counts)",
+        y = "Number of cells",
+        title = "QC: Distribution of library sizes"
+      ) +
+      ggplot2::theme_minimal()
+
+    plt_list$qc_detected_hist <- ggplot2::ggplot(qc_df, ggplot2::aes(x = detected)) +
+      ggplot2::geom_histogram(bins = 50) +
+      ggplot2::labs(
+        x = "Number of detected genes",
+        y = "Number of cells",
+        title = "QC: Distribution of detected genes"
+      ) +
+      ggplot2::theme_minimal()
   } else {
     message(
       "QC metrics 'sum' and/or 'detected' not found in colData(sce). ",
-      "Run `run_pipeline()` with run_qc = TRUE to enable QC plots."
+      "Run run_pipeline(..., run_qc = TRUE) to enable QC plots."
     )
   }
 
-  # --- Step 7: Cluster-level summary plots (if clustering ran) ---
+  ## --- Cluster-level summaries (if clustering present) ---
   if ("cluster_id" %in% colnames(cd)) {
     cl <- cd$cluster_id
     tab <- table(cl)
-
-    # a) Cluster size barplot
-    barplot(
-      tab,
-      xlab = "Cluster ID",
-      ylab = "Number of cells",
-      main = "Cluster sizes",
-      col = "grey80",
-      border = "grey50"
+    cl_df <- data.frame(
+      cluster = names(tab),
+      n_cells = as.numeric(tab)
     )
 
-    # b) Mean QC metric ('sum') per cluster – only if 'sum' exists
+    plt_list$cluster_sizes <- ggplot2::ggplot(
+      cl_df,
+      ggplot2::aes(x = cluster, y = n_cells)
+    ) +
+      ggplot2::geom_col() +
+      ggplot2::labs(
+        x = "Cluster ID",
+        y = "Number of cells",
+        title = "Cluster sizes"
+      ) +
+      ggplot2::theme_minimal()
+
     if ("sum" %in% colnames(cd)) {
       mean_by_cluster <- tapply(cd$sum, cl, mean, na.rm = TRUE)
-      barplot(
-        mean_by_cluster,
-        xlab = "Cluster ID",
-        ylab = "Mean library size (sum)",
-        main = "Mean library size by cluster",
-        col = "grey85",
-        border = "grey40"
+      mean_df <- data.frame(
+        cluster  = names(mean_by_cluster),
+        mean_sum = as.numeric(mean_by_cluster)
       )
+
+      plt_list$cluster_mean_library <- ggplot2::ggplot(
+        mean_df,
+        ggplot2::aes(x = cluster, y = mean_sum)
+      ) +
+        ggplot2::geom_col() +
+        ggplot2::labs(
+          x = "Cluster ID",
+          y = "Mean library size (sum of counts)",
+          title = "Mean library size by cluster"
+        ) +
+        ggplot2::theme_minimal()
     }
   } else {
     message(
@@ -168,5 +191,29 @@ visualise_pipeline <- function(sce, colour_by = NULL) {
     )
   }
 
-  invisible(NULL)
+  ## --- Optionally print all plots ---
+  if (isTRUE(print_plots)) {
+    for (nm in names(plt_list)) {
+      if (!is.null(plt_list[[nm]])) print(plt_list[[nm]])
+    }
+  }
+
+  ## --- Build and save combined plot ---
+  non_null_plots <- plt_list[!vapply(plt_list, is.null, logical(1))]
+  if (length(non_null_plots) > 0) {
+    combined <- patchwork::wrap_plots(non_null_plots)
+    ggplot2::ggsave(
+      filename = save_path,
+      plot     = combined,
+      width    = 14,
+      height   = 10,
+      dpi      = 300
+    )
+    message("Combined pipeline visualisation saved to: ",
+            normalizePath(save_path))
+  } else {
+    message("No plots generated; nothing to save.")
+  }
+
+  invisible(plt_list)
 }

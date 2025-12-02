@@ -4,53 +4,27 @@
 \alias{visualise_pipeline}
 \title{Visualize key steps of the single-cell analysis pipeline}
 \usage{
-visualise_pipeline(sce, colour_by = NA)
+visualise_pipeline(sce, colour_by = NULL)
 }
 \arguments{
 \item{sce}{A `SingleCellExperiment` object that has already been processed
-by the pipeline function `run_pipeline()` and contains all the information required to create typical visualisations
-that are part of analysing scRNA-seq data (McCarthy et al. 2017).}
+by the pipeline function `run_pipeline()`.}
 
-\item{colour_by}{Optional. A character scalar naming a column in
-`colData(sce)` to use for colouring cells in the PCA/UMAP plots. Defaults to
-`NA`, in which case no colouring is applied.
-Unsupervised clustering step is not yet implemented but extremely useful parameter after implementation of clustering}
+\item{colour_by}{Optional character scalar naming a column in
+`colData(sce)` to use for colouring cells in PCA/UMAP plots. If `NULL`
+(default), the function will:
+\enumerate{
+  \item Use `"cluster_id"` when present in `colData(sce)`, or
+  \item Fall back to default colouring if `cluster_id` is not available.
+}}
 }
 \value{
-The function does not explicitely return anything but is called for its
-side-effect of producing plots.
+Invisibly returns `NULL`. Called for its side-effect of producing plots.
 }
 \description{
 This function produces quick diagnostic plots from a processed
-`SingleCellExperiment` object. It first visualizes the mean–variance
-relationship estimated during feature selection (i.e. the output of
-`scran::modelGeneVar()` that was stored in `metadata(sce)$hvg_data`), and then
-plots low-dimensional embeddings (PCA and UMAP). If `colour_by` is supplied,
-the reduced-dimension plots will be coloured by the specified column in
-`colData(sce)`.
-}
-\details{
-This function assumes that:
-\itemize{
-  \item `run_pipeline()` function was run on a `SingleCellExperiment` object and strictly that
-   the output of that function is the input to this function.
-}
-}
-\examples{
-\dontrun{
-visualise_pipeline(sce)
-visualise_pipeline(sce, colour_by = "cluster")
-}
-
-}
-\references{
-Amezquita RA, Lun ATL, Becht E, Carey VJ, Carpp LN, Geistlinger L, Marini F, Rue-Albrecht K, Risso D, Soneson C, et al. 2019 Dec 2. Orchestrating single-cell analysis with Bioconductor. Nature Methods. doi:https://doi.org/10.1038/s41592-019-0654-x.
-
-Lun ATL, McCarthy DJ, Marioni JC. 2016. A step-by-step workflow for low-level analysis of single-cell RNA-seq data with Bioconductor. F1000Research. 5:2122. doi:https://doi.org/10.12688/f1000research.9501.2.
-
-McCarthy DJ, Campbell KR, Lun ATL, Wills QF. 2017 Jan 14. Scater: pre-processing, quality control, normalization and visualization of single-cell RNA-seq data in R. Bioinformatics.:btw777. doi:https://doi.org/10.1093/bioinformatics/btw777.
-
-Wickham H. 2015. R Packages. “O’Reilly Media, Inc.”
-
-Zeisel A, Munoz-Manchado AB, Codeluppi S, Lonnerberg P, La Manno G, Jureus A, Marques S, Munguba H, He L, Betsholtz C, et al. 2015. Cell types in the mouse cortex and hippocampus revealed by single-cell RNA-seq. Science. 347(6226):1138–1142. doi:https://doi.org/10.1126/science.aaa1934.
+`SingleCellExperiment` object. It visualizes the mean–variance relationship
+estimated during feature selection (output of `scran::modelGeneVar()`
+stored in `metadata(sce)$hvg_data`), low-dimensional embeddings (PCA and
+UMAP), and, when available, basic QC and cluster-level summaries.
 }
