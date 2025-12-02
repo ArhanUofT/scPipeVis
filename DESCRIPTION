@@ -24,6 +24,7 @@ RoxygenNote: 7.3.3
 biocViews:
 Imports: 
     SummarizedExperiment, 
+    shiny,
     ggplot2, 
     patchwork, 
     shiny, 
