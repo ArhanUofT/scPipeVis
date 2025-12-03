@@ -25,6 +25,7 @@ biocViews:
 Imports: 
     SummarizedExperiment, 
     shiny,
+    scRNAseq,
     ggplot2, 
     patchwork, 
     shiny, 
