@@ -4,6 +4,9 @@ test_that("visualise_pipeline fails if sce has not been processed by run_pipelin
   skip_if_not_installed("testthat")
 
 
+  ## skip guards added based on bioconductor best practices
+
+
   library(scRNAseq)
   library(SingleCellExperiment)
 

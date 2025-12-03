@@ -1,3 +1,5 @@
+## skip guards added based on bioconductor best practices
+
 test_that("visualise_pipeline runs without error and returns list of ggplots (no colour_by)", {
   skip_if_not_installed("SingleCellExperiment")
   skip_if_not_installed("SummarizedExperiment")

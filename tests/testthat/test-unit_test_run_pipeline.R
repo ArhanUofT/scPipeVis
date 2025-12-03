@@ -1,3 +1,5 @@
+## skip guards added based on bioconductor best practices
+
 test_that("run_pipeline adds logcounts, PCA, and UMAP using real scRNAseq data", {
   # Found this very useful function in R packages chapter 15
   skip_if_not_installed("SingleCellExperiment")

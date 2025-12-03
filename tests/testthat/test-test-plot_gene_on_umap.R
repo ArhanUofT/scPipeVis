@@ -1,3 +1,5 @@
+
+## skip guards added based on bioconductor best practices
 test_that("plot_gene_on_umap runs without error and returns a ggplot", {
   skip_if_not_installed("SingleCellExperiment")
   skip_if_not_installed("SummarizedExperiment")
