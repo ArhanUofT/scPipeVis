@@ -1,11 +1,16 @@
-bibentry(
-  bibtype = "Article",
-  title = ,
-  author = ,
-  journal = ,
-  year = ,
-  volume = ,
-  number = ,
-  pages = ,
-  doi =
+citHeader("To cite scPipeVis in publications use:")
+
+citEntry(
+  entry = "Unpublished",
+  title = "scPipeVis: A Minimal Single-Cell RNA-Seq Analysis and Visualization Pipeline",
+  author = "Arhan Rupani",
+  note = "R package version 1.0.0",
+  year = "2025",
+  url = "https://github.com/ArhanUofT/scPipeVis",
+
+  textVersion = paste(
+    "Rupani, A. (2025). scPipeVis: A Minimal Single-Cell RNA-Seq Analysis and Visualization Pipeline.",
+    "Unpublished R package (version 1.0.0).",
+    "URL: https://github.com/ArhanUofT/scPipeVis."
+  )
 )
