@@ -1,23 +1,63 @@
-#' Plot gene expression on UMAP using ggplot2 and viridis
+#' Plot Gene Expression on a UMAP Embedding
 #'
-#' This function visualizes the expression of a single gene on the UMAP
-#' embedding by colouring cells according to their (log-normalized) expression
-#' values, using a viridis colour scale. It is intended to be used after
-#' `run_pipeline()`, which computes log-normalized counts and UMAP coordinates.
+#' This function visualizes the expression of a single gene on a UMAP embedding
+#' by colouring each cell according to its log-normalized expression value. Such gene-level
+#' visualizations are widely used in exploratory single-cell RNA-seq analysis to
+#' assess marker gene localization across clusters and confirm biological
+#' structure in the data .
 #'
-#' @param sce A processed `SingleCellExperiment` object containing
-#'   a `"logcounts"` assay and a `"UMAP"` entry in `reducedDims(sce)`.
-#' @param gene Character scalar giving the name of the gene to plot. Must exist
-#'   in `rownames(sce)`.
+#' This function is intended to be applied **after** `run_pipeline()`, which
+#' computes the the UMAP embedding.
 #'
-#' @return Invisibly returns the ggplot object. Called for its side-effect
-#'   of producing a UMAP plot coloured by gene expression.
+#' @param sce A processed `SingleCellExperiment` object containing both a
+#'   `"logcounts"` assay and a `"UMAP"` matrix inside `reducedDims(sce)`. These
+#'   components are generated automatically when running `run_pipeline()`.
+#'
+#' @param gene A character string giving the name of the gene to plot. The gene
+#'   must be present in `rownames(sce)`.
+#'
+#' @details
+#' The function extracts:
+#' \enumerate{
+#'   \item the two-dimensional UMAP coordinates from `reducedDims(sce)$UMAP`
+#'   \item the log-normalized expression values for the specified gene from
+#'         `assays(sce)$logcounts`
+#' }
+#' and constructs a scatter plot where each point represents a cell. The
+#' expression values are mapped to colour using a **viridis** scale, which is
+#' colourblind-friendly, making it suitable for
+#' high-density scatterplots in scRNA-seq visualizations.
+#'
+#' UMAP-based gene-level visualization is a standard diagnostic tool used to:
+#' \itemize{
+#'   \item confirm cluster identity via known marker gene expression
+#'   \item evaluate whether clusters align with expected biological signals
+#'   \item detect potential technical artefacts such as gradients or batch
+#'         effects
+#' }
+#'
+#' @return Invisibly returns a `ggplot2` object. The function is called primarily
+#'   for its side-effect of producing a UMAP visualization.
 #'
 #' @examples
 #' \dontrun{
+#' library(scRNAseq)
+#' sce <- ZeiselBrainData()
 #' sce_processed <- run_pipeline(sce)
 #' plot_gene_on_umap(sce_processed, gene = "Tubb3")
 #' }
+#'
+#' @references
+#' Amezquita RA, Lun ATL, Becht E, Carey VJ, Carpp LN, Geistlinger L, Marini F,
+#' Rue-Albrecht K, Risso D, Soneson C, et al. 2019. Orchestrating single-cell
+#' analysis with Bioconductor. *Nature Methods*.
+#'
+#' Lun ATL, McCarthy DJ, Marioni JC. 2016. A step-by-step workflow for low-level
+#' analysis of single-cell RNA-seq data with Bioconductor. *F1000Research*.
+#'
+#' McCarthy DJ, Campbell KR, Lun ATL, Wills QF. 2017. Scater: pre-processing,
+#' quality control, normalization and visualization of single-cell RNA-seq data
+#' in R. *Bioinformatics*.
 #'
 #' @export
 #' @importFrom SummarizedExperiment assays
