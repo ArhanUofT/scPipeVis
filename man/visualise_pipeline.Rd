@@ -2,7 +2,7 @@
 % Please edit documentation in R/visualise_pipeline.R
 \name{visualise_pipeline}
 \alias{visualise_pipeline}
-\title{Visualize key steps of the single-cell analysis pipeline}
+\title{Visualize results of the single-cell analysis pipeline}
 \usage{
 visualise_pipeline(
   sce,
@@ -12,20 +12,153 @@ visualise_pipeline(
 )
 }
 \arguments{
-\item{sce}{A processed SingleCellExperiment object.}
+\item{sce}{A processed `SingleCellExperiment` object that has been run
+through `run_pipeline()`}
 
-\item{colour_by}{Optional column name in colData(sce) used to colour PCA/UMAP.}
+\item{colour_by}{Optional character scalar naming a column in
+`colData(sce)` used to colour PCA and UMAP plots (e.g. `"cluster_id"` or
+a sample/covariate column). If `NULL` (default), the function will:
+\enumerate{
+  \item Use `"cluster_id"` when present in `colData(sce)`, or
+  \item Fall back to the default colouring used by
+        `scater::plotReducedDim()` (McCarthy et al. 2017).
+}}
 
-\item{print_plots}{Logical; if TRUE prints all plots. Default TRUE.}
+\item{print_plots}{Logical; if `TRUE` (default), each plot in the output
+list is printed to the active graphics device in sequence. Set to `FALSE`
+to suppress on-screen plotting (useful in automated scripts and tests).}
 
-\item{save_path}{File path to save the combined plot. Default:
-"scPipeVis_combined_plot.png".}
+\item{save_path}{Character string giving the file path where a combined
+multi-panel figure should be saved. The combined plot is assembled with
+`patchwork::wrap_plots()` and saved via `ggplot2::ggsave()`. The default
+is `"scPipeVis_combined_plot.png"`. Set to a path inside `tempdir()` in
+testing contexts.}
 }
 \value{
-A list of ggplot objects invisibly.
+Invisibly returns a named `list` of `ggplot` objects. Depending on which
+components are present in `sce`, this list may include some or all of:
+\itemize{
+  \item `mean_variance` – HVG mean–variance plot with fitted trend
+        (Amezquita et al. 2019; Lun et al. 2016)
+  \item `pca` – PCA embedding
+  \item `umap` – UMAP embedding
+  \item `qc_lib_vs_detected` – library size vs detected genes scatter plot
+  \item `qc_lib_hist` – histogram of library sizes
+  \item `qc_detected_hist` – histogram of detected genes
+  \item `cluster_sizes` – bar plot of cluster sizes
+  \item `cluster_mean_library` – mean library size per cluster
+}
+As a side-effect, the function can print these plots and saves a combined
+multi-panel summary figure to `save_path` when at least one plot is
+generated.
 }
 \description{
-Produces diagnostic plots (HVG trend, PCA, UMAP, QC, clusters) and returns
-them as a named list. Optionally prints them and also saves a *combined*
-multi-panel figure as a PNG file using patchwork.
+This function generates a set of diagnostic plots from a processed
+`SingleCellExperiment` object. It is designed to be used after
+`run_pipeline()`, which computes quality control metrics, normalization,
+highly variable genes (HVGs), dimensionality reduction, UMAP, and
+clustering using Bioconductor workflows for single-cell analysis
+(Amezquita et al. 2019; Lun et al. 2016; McCarthy et al. 2017).
+The function produces:
+\itemize{
+  \item A mean–variance plot for HVGs, overlaying the fitted trend used
+        during feature selection with `scran::modelGeneVar()`
+        (Lun et al. 2016; Amezquita et al. 2019).
+  \item Low-dimensional embeddings (PCA and UMAP), optionally coloured by
+        cluster labels or another column in `colData(sce)`, using
+        visualisation tools from `scater` (McCarthy et al. 2017).
+  \item Basic QC plots (library size vs detected genes, and distributions
+        of library size and detected genes) when QC metrics are available,
+        following standard scRNA-seq practice (McCarthy et al. 2017).
+  \item Simple cluster-level summaries (cluster sizes and mean library size
+        per cluster) when clustering has been performed.
+}
+All plots are returned as a named list of `ggplot` objects. Optionally, they
+can be printed to the active device and combined into a single multi-panel
+figure that is saved to disk, leveraging the `ggplot2` and `patchwork`
+ecosystems (Wickham 2016; Wickham 2015).
+}
+\details{
+This function assumes that `sce` has been processed by `run_pipeline()`
+
+The visualisation logic is organised as follows:
+\enumerate{
+  \item Validate that `metadata(sce)$hvg_data` exists and contains a fitted
+        variance trend from `scran::modelGeneVar()`; ensure PCA and UMAP
+        exist in `reducedDims(sce)`.
+  \item Build an HVG mean–variance plot using `ggplot2` (Wickham 2016),
+        overlaying the fitted trend from the HVG model.
+  \item Generate PCA and UMAP plots using `scater::plotReducedDim()`
+        (McCarthy et al. 2017), with optional colouring by `colour_by`
+        (or by `cluster_id` when present).
+  \item If QC metrics (`sum`, `detected`) are available in `colData(sce)`,
+        produce basic QC plots: library size vs detected genes and
+        distributions of both.
+  \item If a `cluster_id` column is present, create simple cluster-level
+        summary plots: cluster sizes and mean library size per cluster.
+  \item Optionally print all plots and assemble non-`NULL` plots into a
+        single multi-panel figure with `patchwork::wrap_plots()`, saving it
+        to `save_path` via `ggplot2::ggsave()`.
+}
+
+Design-wise, `visualise_pipeline()` follows a “single responsibility”
+principle: it does not modify `sce`, but focuses solely on providing a
+systematic, reproducible way to visualise the main outputs of
+`run_pipeline()`. This supports both interactive
+exploration and scripted/automated workflows in downstream analysis.
+}
+\note{
+This implementation is intended for preliminary exploratory visualisation.
+If required components (e.g., HVG metadata, PCA, UMAP) are missing,
+informative errors are raised to help users diagnose whether the pipeline
+was run correctly. QC- and cluster-based plots are only generated if the
+relevant columns are present in `colData(sce)`.
+}
+\examples{
+\dontrun{
+library(scRNAseq)
+library(SingleCellExperiment)
+library(scPipeVis)
+
+sce <- ZeiselBrainData()
+sce_processed <- run_pipeline(sce)
+
+# Generate and print all diagnostic plots, and save a combined PNG
+plots <- visualise_pipeline(sce_processed)
+
+# Access the PCA plot directly
+plots$pca
+
+# Use a custom colouring variable (e.g., cluster_id or a sample covariate)
+visualise_pipeline(sce_processed, colour_by = "cluster_id")
+
+# Suppress printing and save only the combined figure to a temporary file
+tmp_file <- file.path(tempdir(), "scPipeVis_overview.png")
+visualise_pipeline(
+  sce_processed,
+  print_plots = FALSE,
+  save_path   = tmp_file
+)
+}
+
+}
+\references{
+Amezquita RA, Lun ATL, Becht E, Carey VJ, Carpp LN, Geistlinger L, Marini F,
+Rue-Albrecht K, Risso D, Soneson C, et al. 2019. Orchestrating single-cell
+analysis with Bioconductor. Nature Methods.
+
+Lun ATL, McCarthy DJ, Marioni JC. 2016. A step-by-step workflow for low-level
+analysis of single-cell RNA-seq data with Bioconductor. F1000Research. 5:2122.
+
+McCarthy DJ, Campbell KR, Lun ATL, Wills QF. 2017. Scater: pre-processing,
+quality control, normalization and visualization of single-cell RNA-seq data
+in R. Bioinformatics.
+
+Wickham H. 2015. R Packages. “O’Reilly Media, Inc.”
+
+Wickham H. 2016. ggplot2: Elegant Graphics for Data Analysis. Springer.
+
+Zeisel A, Munoz-Manchado AB, Codeluppi S, Lonnerberg P, La Manno G, Jureus A,
+Marques S, Munguba H, He L, Betsholtz C, et al. 2015. Cell types in the mouse
+cortex and hippocampus revealed by single-cell RNA-seq. Science.
 }

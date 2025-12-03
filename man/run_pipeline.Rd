@@ -67,14 +67,14 @@ The pipeline performs the following steps in order:
   \item Input validation to ensure `sce` is a `SingleCellExperiment`
         with a valid `"counts"` assay.
   \item (Optional) Per-cell QC with `scater::addPerCellQC()`, followed by
-        filtering based on `min_genes` and `min_counts`.
-  \item Normalization of counts using `scuttle::logNormCounts()`.
+        filtering based on `min_genes` and `min_counts` (McCarthy et al. 2017).
+  \item Normalization of counts using `scuttle::logNormCounts()` (Amezquita et al. 2019; McCarthy et al. 2017).
   \item Feature selection: highly variable genes via `scran::modelGeneVar()`
-        and `scran::getTopHVGs()`.
-  \item Dimensionality reduction using `scran::fixedPCA()`.
-  \item UMAP embedding using `scater::runUMAP()` on the PCA space.
+        and `scran::getTopHVGs()` (Lun et al. 2016).
+  \item Dimensionality reduction using `scran::fixedPCA()` (Lun et al. 2016).
+  \item UMAP embedding using `scater::runUMAP()` on the PCA space (Lun et al. 2016).
   \item Unsupervised clustering using `scater::clusterCells()` on the
-        reduced dimension specified by `cluster_dimred`.
+        reduced dimension specified by `cluster_dimred` (Lun et al. 2016).
 }
 
 Each step is delegated to a dedicated helper function
