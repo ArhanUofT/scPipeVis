@@ -38,8 +38,8 @@ methods at each step. This process is further complicated by tuning of
 hyperparameters at many different steps. Therefore, any user while
 analyzing their data, has to make so many choices/decisions at each
 step. These decisions, like tuning the hyperparameter or choosing the
-right method is absolutely not trivial. In other words, these choices at
-each step can affect your downstream analyses. Therefore, making well
+right method are absolutely not trivial. In other words, these choices
+at each step can affect your downstream analyses. Therefore, making well
 informed decisions are crucial. This is where scPipeVis comes in,
 following an extensive literature review (Amezquita et al. 2019), I have
 put together a pipeline that takes care of most of these above mentioned
@@ -51,7 +51,9 @@ chosen after going through the literature and figuring out what kind of
 visualizations are required at each step. Therefore, this part of the
 package will facilitate informed decision making for users as they go on
 to select the best suitable methods and hyper parameters which in turn
-best suits their own datasets and meets their needs.
+best suits their own datasets and meets their needs. The aim is to
+reduce the initial decision burden and provide a starting point for
+further, more specialised analyses.
 
 ### Limitations of `scPipeVis`
 
@@ -80,12 +82,10 @@ devtools::install_github("ArhanUofT/scPipeVis", build_vignettes = TRUE)
 library("scPipeVis")
 ```
 
-In case installation fails, because dependencies are not on CRAN, then
-run the following line of code before installation of the package to
-manually download the dependencies:
+To run the Shiny app:
 
 ``` r
-BiocManager::install(c("S4Vectors", "SingleCellExperiment", "scater", "scran", "scuttle", "scRNAseq"))
+run_scPipeVis_app()
 ```
 
 ## Overview
@@ -95,13 +95,37 @@ ls("package:scPipeVis")
 browseVignettes("scPipeVis")
 ```
 
-`scPipeVis` contains 2 main functions as of now
+`scPipeVis` currently provides four main user-facing functions:
 
-1.  ***run_pipeline*** for running a typical scRNA-seq pipeline given
-    the counts matrix/data in a `SingleCellExperiment` object.
+- **`run_pipeline()`**  
 
-2.  ***visualise_pipeline*** for creating typical plots which are used
-    during exploratory scRNA-seq data analysis.
+  Run a standard scRNA-seq analysis pipeline on a `SingleCellExperiment`
+  object. The pipeline includes quality control metrics,
+  log-normalisation, highly variable gene selection, PCA, UMAP, and
+  graph-based clustering, with results stored back into the
+  `SingleCellExperiment`.
+
+- **`visualise_pipeline()`**  
+
+  Generate diagnostic plots summarising major pipeline steps, including
+  the mean–variance relationship used for feature selection,
+  low-dimensional embeddings (PCA and UMAP), QC distributions, and
+  simple cluster-level summaries. Plots are returned as a named list of
+  `ggplot` objects and are also combined and saved as a single
+  multi-panel figure.
+
+- **`plot_gene_on_umap()`**  
+
+  Visualise expression of a single gene on the UMAP embedding using a
+  viridis colour scale. This is useful for quick marker gene
+  exploration. This can be useful for manual annotations or validating
+  cluster annotations using marker genes.
+
+- **`run_scPipeVis_app()`**  
+
+  Launch an interactive Shiny app which runs the pipeline (if needed)
+  and allows the user to select any gene and visualise its expression on
+  the UMAP embedding via a simple graphical interface.
 
 Refer to package vignettes for more details. An overview of the package
 is illustrated below.  
@@ -117,15 +141,23 @@ is illustrated below.
   typical scRNA-seq pipeline given the counts matrix/data in a
   `SingleCellExperiment` object. The `visualise_pipeline` fucntion was
   written by the author and creates typical plots which are used during
-  exploratory scRNA-seq data analysis. Both the packages make use of
-  functions implemented in already existing R packages made for
+  exploratory scRNA-seq data analysis. The `plot_gene_on_umap` function
+  was written by the author and is inspired by the need to regularly
+  visualise expression of marker genes after clustering for manual
+  annotations or checking annotations. This function was originally
+  needed for the authors other research project and found its way into
+  this package. The shiny app is mainly build around this function as it
+  makes for a perfect use case for the shiny app. All the functions make
+  use of functions implemented in already existing R packages made for
   scRNA-seq data analysis. These packages are mentioned below and their
   full references are in the References section below.
 - Packages used: SingleCellExperiment (Lun et al. 2016), scuttle
   (McCarthy et al. 2017), scater (McCarthy et al. 2017), scran (Lun et
-  al. 2016), S4Vectors
-- Generative AI was not used at any point throughout the process of this
-  package’s development
+  al. 2016), S4Vectors, ggplot2
+- Generative AI was used for assignment 5 for coding help only. However,
+  generative AI was not used until assignment 4 and the descison to use
+  it in assignment 5 was made to not be at a disadvantage compared to
+  other students in the class.
 
 ## References
 
