@@ -125,7 +125,9 @@ browseVignettes("scPipeVis")
 
   Launch an interactive Shiny app which runs the pipeline (if needed)
   and allows the user to select any gene and visualise its expression on
-  the UMAP embedding via a simple graphical interface.
+  the UMAP embedding via a simple graphical interface. Please read the
+  functions man page to understand how to pass in your own data to the
+  shiny app.
 
 Refer to package vignettes for more details. An overview of the package
 is illustrated below.  
@@ -150,7 +152,9 @@ is illustrated below.
   makes for a perfect use case for the shiny app. All the functions make
   use of functions implemented in already existing R packages made for
   scRNA-seq data analysis. These packages are mentioned below and their
-  full references are in the References section below.
+  full references are in the References section below. There are intext
+  citations present in the man pages for all the functions wherever an
+  already existing function from another package was used.
 - Packages used: SingleCellExperiment (Lun et al. 2016), scuttle
   (McCarthy et al. 2017), scater (McCarthy et al. 2017), scran (Lun et
   al. 2016), S4Vectors, ggplot2
@@ -181,6 +185,10 @@ is illustrated below.
   2.23.1, <https://bioconductor.org/packages/scRNAseq>.
 - Wickham H. 2015. R Packages. “O’Reilly Media, Inc.”
 - Slides for BCB410 by professor Anjali Silva
+- Chang W, Cheng J, Allaire J, Sievert C, Schloerke B, Aden-Buie G, Xie
+  Y, Allen J, McPherson J, Dipert A, Borges B (2025). *shiny: Web
+  Application Framework for R*. R package version 1.12.1,
+  <https://shiny.posit.co/>.
 
 ## Acknowledgements
 

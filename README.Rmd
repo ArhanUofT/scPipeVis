@@ -76,7 +76,7 @@ browseVignettes("scPipeVis")
 
 -   **`run_scPipeVis_app()`**\
 
-    Launch an interactive Shiny app which runs the pipeline (if needed) and allows the user to select any gene and visualise its expression on the UMAP embedding via a simple graphical interface.
+    Launch an interactive Shiny app which runs the pipeline (if needed) and allows the user to select any gene and visualise its expression on the UMAP embedding via a simple graphical interface. Please read the functions man page to understand how to pass in your own data to the shiny app.
 
 Refer to package vignettes for more details. An overview of the package is illustrated below.\
 ![](./inst/extdata/scPipeVis-rough-pipeline-sketch.png)
@@ -84,7 +84,7 @@ Refer to package vignettes for more details. An overview of the package is illus
 ## Contributions
 
 -   `scPipeVis` was developed by Arhan Rupani, 4th year Bioinformatics and Computational Biology student at the University of Toronto. The author did an extensive literature review to develop a basic understanding of the field of scRNA-seq data analysis and created this pipeline.
--   The `run_pipeline` function was written by the author and runs a typical scRNA-seq pipeline given the counts matrix/data in a `SingleCellExperiment` object. The `visualise_pipeline` fucntion was written by the author and creates typical plots which are used during exploratory scRNA-seq data analysis. The `plot_gene_on_umap` function was written by the author and is inspired by the need to regularly visualise expression of marker genes after clustering for manual annotations or checking annotations. This function was originally needed for the authors other research project and found its way into this package. The shiny app is mainly build around this function as it makes for a perfect use case for the shiny app. All the functions make use of functions implemented in already existing R packages made for scRNA-seq data analysis. These packages are mentioned below and their full references are in the References section below.
+-   The `run_pipeline` function was written by the author and runs a typical scRNA-seq pipeline given the counts matrix/data in a `SingleCellExperiment` object. The `visualise_pipeline` fucntion was written by the author and creates typical plots which are used during exploratory scRNA-seq data analysis. The `plot_gene_on_umap` function was written by the author and is inspired by the need to regularly visualise expression of marker genes after clustering for manual annotations or checking annotations. This function was originally needed for the authors other research project and found its way into this package. The shiny app is mainly build around this function as it makes for a perfect use case for the shiny app. All the functions make use of functions implemented in already existing R packages made for scRNA-seq data analysis. These packages are mentioned below and their full references are in the References section below. There are intext citations present in the man pages for all the functions wherever an already existing function from another package was used.
 -   Packages used: SingleCellExperiment (Lun et al. 2016), scuttle (McCarthy et al. 2017), scater (McCarthy et al. 2017), scran (Lun et al. 2016), S4Vectors, ggplot2
 -   Generative AI was used for assignment 5 for coding help only. However, generative AI was not used until assignment 4 and the descison to use it in assignment 5 was made to not be at a disadvantage compared to other students in the class.
 
@@ -98,6 +98,7 @@ Refer to package vignettes for more details. An overview of the package is illus
 -   Risso D, Cole M (2025). scRNAseq: Collection of Public Single-Cell RNA-Seq Datasets. <doi:10.18129/B9.bioc.scRNAseq>, R package version 2.23.1, <https://bioconductor.org/packages/scRNAseq>.
 -   Wickham H. 2015. R Packages. “O’Reilly Media, Inc.”
 -   Slides for BCB410 by professor Anjali Silva
+-   Chang W, Cheng J, Allaire J, Sievert C, Schloerke B, Aden-Buie G, Xie Y, Allen J, McPherson J, Dipert A, Borges B (2025). *shiny: Web Application Framework for R*. R package version 1.12.1, <https://shiny.posit.co/>.
 
 ## Acknowledgements
 
