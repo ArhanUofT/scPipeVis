@@ -158,7 +158,7 @@ visualise_pipeline <- function(
     print_plots = TRUE,
     save_path   = "scPipeVis_combined_plot.png"
 ) {
-  ## --- Validate HVG info ---
+  ## Validate HVG info
   hvg_data <- S4Vectors::metadata(sce)$hvg_data
   if (is.null(hvg_data)) {
     stop("No 'hvg_data' found in metadata(sce). Did you run run_pipeline()?", call. = FALSE)
@@ -169,7 +169,7 @@ visualise_pipeline <- function(
     stop("No trend fit found in metadata(hvg_data). Check scran::modelGeneVar().", call. = FALSE)
   }
 
-  ## --- Sanely pick variance column: var / total / bio ---
+  ##Sanely pick variance column: var / total / bio
   hvg_cols <- colnames(hvg_data)
   var_candidate <- intersect(c("var", "total", "bio"), hvg_cols)
   if (length(var_candidate) == 0L) {
@@ -182,7 +182,7 @@ visualise_pipeline <- function(
   }
   var_col_name <- var_candidate[1]
 
-  ## --- Check reduced dimensions ---
+  ## Check reduced dimansions
   rd_names <- names(SingleCellExperiment::reducedDims(sce))
   if (!"PCA" %in% rd_names) {
     stop("Reduced dimension 'PCA' not found in reducedDims(sce).", call. = FALSE)
@@ -191,7 +191,7 @@ visualise_pipeline <- function(
     stop("Reduced dimension 'UMAP' not found in reducedDims(sce).", call. = FALSE)
   }
 
-  ## --- Decide colouring logic ---
+  ## Decide colouring logic
   cd <- SummarizedExperiment::colData(sce)
   if (is.null(colour_by)) {
     if ("cluster_id" %in% colnames(cd)) {
@@ -205,10 +205,10 @@ visualise_pipeline <- function(
     )
   }
 
-  ## --- Plot container ---
+  ##Plot container
   plt_list <- list()
 
-  ## --- HVG mean–variance plot ---
+  ## HVG mean–variance plot
   mv_df <- data.frame(
     mean = hvg_data$mean,
     var  = hvg_data[[var_col_name]]
@@ -226,7 +226,7 @@ visualise_pipeline <- function(
 
   plt_list$mean_variance <- p_mean_var
 
-  ## --- PCA & UMAP ---
+  ## PCA & UMAP
   if (is.null(colour_by)) {
     p_pca  <- scater::plotReducedDim(sce, dimred = "PCA")
     p_umap <- scater::plotReducedDim(sce, dimred = "UMAP")
@@ -237,7 +237,7 @@ visualise_pipeline <- function(
   plt_list$pca  <- p_pca
   plt_list$umap <- p_umap
 
-  ## --- QC plots (if QC metrics present) ---
+  ## QC plots (if QC metrics present)
   if (all(c("sum", "detected") %in% colnames(cd))) {
     qc_df <- as.data.frame(cd)
 
@@ -277,7 +277,7 @@ visualise_pipeline <- function(
     )
   }
 
-  ## --- Cluster-level summaries (if clustering present) ---
+  ## Cluster-level summaries (fi clustering present)
   if ("cluster_id" %in% colnames(cd)) {
     cl <- cd$cluster_id
     tab <- table(cl)
@@ -324,14 +324,14 @@ visualise_pipeline <- function(
     )
   }
 
-  ## --- Optionally print all plots ---
+  ## Optionally print all plots
   if (isTRUE(print_plots)) {
     for (nm in names(plt_list)) {
       if (!is.null(plt_list[[nm]])) print(plt_list[[nm]])
     }
   }
 
-  ## --- Build and save combined plot ---
+  ## Build and save combined plot
   non_null_plots <- plt_list[!vapply(plt_list, is.null, logical(1))]
   if (length(non_null_plots) > 0) {
     combined <- patchwork::wrap_plots(non_null_plots)
