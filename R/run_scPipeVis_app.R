@@ -53,10 +53,6 @@ run_scPipeVis_app <- function(sce = NULL) {
 
   appDir <- system.file("shiny-scripts", package = "scPipeVis")
 
-  if (appDir == "") {
-    stop("Could not find Shiny app directory 'shiny-scripts' in the scPipeVis package.")
-  }
-
   shiny::runApp(appDir, display.mode = "normal")
 }
 # [END]
