@@ -35,5 +35,6 @@ Imports:
     scater,
     scran,
     scuttle,
-    SingleCellExperiment
+    SingleCellExperiment,
+    DelayedArray
 Config/testthat/edition: 3
