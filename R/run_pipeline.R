@@ -172,9 +172,7 @@ run_pipeline <- function(
   return(sce)
 }
 
-#------------------------------------------------------------------------------#
 # Input validation
-#------------------------------------------------------------------------------#
 
 validate_sce_input <- function(sce) {
   # Design principle: separate validation logic for clarity and easy testing.
@@ -204,9 +202,7 @@ validate_sce_input <- function(sce) {
   return(sce)
 }
 
-#------------------------------------------------------------------------------#
 # Quality control helper
-#------------------------------------------------------------------------------#
 
 perform_qc <- function(sce, min_genes, min_counts) {
   # Design principle: QC is optional and configurable, but defaults are
@@ -230,9 +226,7 @@ perform_qc <- function(sce, min_genes, min_counts) {
   return(sce_filtered)
 }
 
-#------------------------------------------------------------------------------#
 # Normalization
-#------------------------------------------------------------------------------#
 
 perform_normalization <- function(sce) {
   # Use log-normalization (logNormCounts) as a robust default.
@@ -240,9 +234,7 @@ perform_normalization <- function(sce) {
   return(sce)
 }
 
-#------------------------------------------------------------------------------#
 # Feature selection
-#------------------------------------------------------------------------------#
 
 perform_feature_selection <- function(sce, number = 2000) {
   # Select highly variable genes (HVGs) for downstream analyses.
@@ -259,9 +251,7 @@ perform_feature_selection <- function(sce, number = 2000) {
   return(sce)
 }
 
-#------------------------------------------------------------------------------#
 # Dimensionality reduction
-#------------------------------------------------------------------------------#
 
 perform_dimensionality_reduction <- function(sce, n_pcs = 20) {
   set.seed(1008796812)  # reproducibility
@@ -284,9 +274,7 @@ perform_dimensionality_reduction <- function(sce, n_pcs = 20) {
   return(sce)
 }
 
-#------------------------------------------------------------------------------#
 # UMAP
-#------------------------------------------------------------------------------#
 
 calculate_umap <- function(sce, n_neighbors = 15) {
   set.seed(1008796812)  # reproducibility
@@ -298,9 +286,7 @@ calculate_umap <- function(sce, n_neighbors = 15) {
   return(sce)
 }
 
-#------------------------------------------------------------------------------#
 # Clustering
-#------------------------------------------------------------------------------#
 
 perform_clustering <- function(sce, use_dimred = "PCA") {
 
@@ -335,10 +321,8 @@ perform_clustering <- function(sce, use_dimred = "PCA") {
   return(sce)
 }
 
-
-#------------------------------------------------------------------------------#
 # Cluster summary helper
-#------------------------------------------------------------------------------#
+
 
 #' Summarize cluster sizes
 #'
