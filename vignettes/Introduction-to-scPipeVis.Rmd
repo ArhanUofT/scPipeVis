@@ -48,7 +48,7 @@ We will demonstrate the workflow using a public dataset from the `scRNAseq` pack
 
 ```{r}
 # install.packages("BiocManager")
-BiocManager::install("scRNAseq")
+# BiocManager::install("scRNAseq")
 ```
 
 Load the dataset (Zeisel et al., 2015 mouse brain) and inspect the object:

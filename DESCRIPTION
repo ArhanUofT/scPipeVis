@@ -17,6 +17,7 @@ LazyData: true
 Suggests: 
     knitr,
     rmarkdown,
+    BiocManager,
     scRNAseq,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
