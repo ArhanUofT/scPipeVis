@@ -19,7 +19,9 @@ Suggests:
     rmarkdown,
     BiocManager,
     scRNAseq,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    DelayedMatrixStats,
+    sparseMatrixStats
 VignetteBuilder: knitr
 RoxygenNote: 7.3.3
 biocViews:
